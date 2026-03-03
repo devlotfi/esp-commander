@@ -134,10 +134,12 @@ export default function ConnectionComponent({ connection }: ConnectionProps) {
                 "color-mix(in srgb, var(--accent), transparent 50%) 0 0 2rem 0",
             }}
             onPress={() => {
-              console.log("lol", connection.username);
               if (connection.username) {
-                console.log("lol");
-                passwordState.open();
+                if (connection.password) {
+                  mutateConnect(connection.password);
+                } else {
+                  passwordState.open();
+                }
               } else {
                 mutateConnect(undefined);
               }

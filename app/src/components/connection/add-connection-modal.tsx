@@ -7,7 +7,7 @@ import {
   type UseOverlayStateReturn,
 } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
+import { Eye, EyeOff, Plus } from "lucide-react";
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as yup from "yup";
@@ -34,7 +34,8 @@ export default function AddConnectionModal({ state }: AddConnectionModalProps) {
         url: connection.url,
         discoveryTopic: connection.discoveryTopic,
         responseDiscoveryTopic: connection.responseDiscoveryTopic,
-        username: connection.username,
+        username: connection.username || null,
+        password: connection.password || null,
       });
       queryClient.resetQueries({
         queryKey: ["CONNECTIONS"],
@@ -48,8 +49,9 @@ export default function AddConnectionModal({ state }: AddConnectionModalProps) {
       name: "",
       url: "",
       username: "",
-      discoveryTopic: "iot-commander/discovery-topic",
-      responseDiscoveryTopic: "iot-commander/response-discovery-topic",
+      password: "",
+      discoveryTopic: "iot-commander/discovery/request",
+      responseDiscoveryTopic: "iot-commander/discovery/response",
     },
     validationSchema: yup.object({
       name: yup.string().required(),
@@ -63,6 +65,7 @@ export default function AddConnectionModal({ state }: AddConnectionModalProps) {
         )
         .required(),
       username: yup.string(),
+      password: yup.string(),
       discoveryTopic: yup.string().required(),
       responseDiscoveryTopic: yup.string().required(),
     }),
@@ -72,6 +75,8 @@ export default function AddConnectionModal({ state }: AddConnectionModalProps) {
   });
 
   const [useAuth, setUseAuth] = useState<boolean>(true);
+  const [isVisible, setIsVisible] = useState(false);
+  const toggleVisibility = () => setIsVisible(!isVisible);
 
   return (
     <Modal.Backdrop
@@ -125,11 +130,31 @@ export default function AddConnectionModal({ state }: AddConnectionModalProps) {
                 <Label className="text-sm">{t("useAuthenthication")}</Label>
               </Switch>
               {useAuth ? (
-                <ValidatedTextField
-                  formik={formik}
-                  name="username"
-                  labelProps={{ children: t("username") }}
-                ></ValidatedTextField>
+                <>
+                  <ValidatedTextField
+                    formik={formik}
+                    name="username"
+                    labelProps={{ children: t("username") }}
+                  ></ValidatedTextField>
+                  <ValidatedTextField
+                    formik={formik}
+                    name="password"
+                    labelProps={{ children: t("password") }}
+                    inputProps={{
+                      type: isVisible ? "text" : "password",
+                    }}
+                    suffix={
+                      <Button
+                        isIconOnly
+                        variant="ghost"
+                        size="sm"
+                        onPress={toggleVisibility}
+                      >
+                        {isVisible ? <EyeOff></EyeOff> : <Eye></Eye>}
+                      </Button>
+                    }
+                  ></ValidatedTextField>
+                </>
               ) : null}
 
               <Button

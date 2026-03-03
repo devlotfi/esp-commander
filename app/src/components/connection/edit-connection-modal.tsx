@@ -7,7 +7,7 @@ import {
   type UseOverlayStateReturn,
 } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Pen } from "lucide-react";
+import { Eye, EyeOff, Pen } from "lucide-react";
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as yup from "yup";
@@ -41,6 +41,7 @@ export default function EditConnectionModal({
         data.discoveryTopic = values.discoveryTopic;
         data.responseDiscoveryTopic = values.responseDiscoveryTopic;
         data.username = values.username || null;
+        data.password = values.password || null;
         return data;
       });
       queryClient.resetQueries({
@@ -55,6 +56,7 @@ export default function EditConnectionModal({
       name: connection.name,
       url: connection.url,
       username: connection.username || "",
+      password: connection.password || "",
       discoveryTopic: connection.discoveryTopic,
       responseDiscoveryTopic: connection.responseDiscoveryTopic,
     },
@@ -70,6 +72,7 @@ export default function EditConnectionModal({
         )
         .required(),
       username: yup.string(),
+      password: yup.string(),
       discoveryTopic: yup.string().required(),
       responseDiscoveryTopic: yup.string().required(),
     }),
@@ -81,6 +84,8 @@ export default function EditConnectionModal({
   const [useAuth, setUseAuth] = useState<boolean>(
     connection.username ? true : false,
   );
+  const [isVisible, setIsVisible] = useState(false);
+  const toggleVisibility = () => setIsVisible(!isVisible);
 
   return (
     <Modal.Backdrop
@@ -134,11 +139,31 @@ export default function EditConnectionModal({
                 <Label className="text-sm">{t("useAuthenthication")}</Label>
               </Switch>
               {useAuth ? (
-                <ValidatedTextField
-                  formik={formik}
-                  name="username"
-                  labelProps={{ children: t("username") }}
-                ></ValidatedTextField>
+                <>
+                  <ValidatedTextField
+                    formik={formik}
+                    name="username"
+                    labelProps={{ children: t("username") }}
+                  ></ValidatedTextField>
+                  <ValidatedTextField
+                    formik={formik}
+                    name="password"
+                    labelProps={{ children: t("password") }}
+                    inputProps={{
+                      type: isVisible ? "text" : "password",
+                    }}
+                    suffix={
+                      <Button
+                        isIconOnly
+                        variant="ghost"
+                        size="sm"
+                        onPress={toggleVisibility}
+                      >
+                        {isVisible ? <EyeOff></EyeOff> : <Eye></Eye>}
+                      </Button>
+                    }
+                  ></ValidatedTextField>
+                </>
               ) : null}
 
               <Button

@@ -59,6 +59,7 @@ export default function MqttProvider({ children }: PropsWithChildren) {
           discoveryTopic: connection.discoveryTopic,
           responseDiscoveryTopic: connection.responseDiscoveryTopic,
           username: connection.username,
+          password: connection.password,
         },
       }));
     },

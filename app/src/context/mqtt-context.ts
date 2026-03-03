@@ -20,6 +20,7 @@ export function copyConnectionData(
       discoveryTopic: connectionData.info.discoveryTopic,
       responseDiscoveryTopic: connectionData.info.responseDiscoveryTopic,
       username: connectionData.info.username,
+      password: connectionData.info.password,
     },
   };
 }

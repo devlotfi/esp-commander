@@ -23,6 +23,8 @@ export default function QueryComponent({ query }: QueryComponentProps) {
   const { data, isLoading, refetch, isRefetching } = useQuery({
     queryKey: ["QUERY", query.name],
     queryFn: async () => {
+      console.log("fetch");
+
       const res = await mqttQuery({
         client: connectionData.client,
         requestTopic: device.requestTopic,

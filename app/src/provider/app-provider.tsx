@@ -9,6 +9,7 @@ export default function AppProvider({ children }: PropsWithChildren) {
   return (
     <AppContext.Provider
       value={{
+        scrollRef: AppContextInitialValue.scrollRef,
         sidebarOpen,
         setSidebarOpen,
       }}

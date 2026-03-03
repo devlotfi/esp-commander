@@ -5,6 +5,7 @@ export interface ConnectionDocType {
   name: string;
   url: string;
   username: string | null;
+  password: string | null;
   discoveryTopic: string;
   responseDiscoveryTopic: string;
 }
@@ -29,6 +30,10 @@ export const connectionSchemaLiteral: RxJsonSchema<ConnectionDocType> = {
       maxLength: 255,
     },
     username: {
+      type: ["string", "null"],
+      maxLength: 255,
+    },
+    password: {
       type: ["string", "null"],
       maxLength: 255,
     },
