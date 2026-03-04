@@ -60,8 +60,8 @@
     @apply border border-border shadow-md;
     background: linear-gradient(
       to top,
-      color-mix(in srgb, var(--accent), var(--background) 95%),
-      color-mix(in srgb, var(--surface), var(--background) 80%)
+      color-mix(in srgb, transparent, var(--background) 95%),
+      color-mix(in srgb, transparent, var(--background) 90%)
     );
     box-shadow: color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px
       inset;
@@ -71,8 +71,8 @@
     @apply border border-border shadow-md;
     background: linear-gradient(
       to top,
-      color-mix(in srgb, var(--accent), var(--background) 95%),
-      color-mix(in srgb, var(--surface), var(--background) 70%)
+      color-mix(in srgb, transparent, var(--background) 95%),
+      color-mix(in srgb, transparent, var(--background) 90%)
     );
     box-shadow: color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px
       inset;
@@ -153,7 +153,7 @@
   }
   .tabs__list {
     @apply border border-border;
-    background: color-mix(in srgb, var(--surface), transparent 80%);
+    background: color-mix(in srgb, var(--background), transparent 10%);
     box-shadow: color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px
       inset;
   }

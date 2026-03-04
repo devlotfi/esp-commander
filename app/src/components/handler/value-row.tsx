@@ -43,14 +43,27 @@ export default function ValueRow({
         <div className="flex h-[1px] flex-1 bg-separator"></div>
       </div>
       {valueData !== undefined ? (
-        <div className="flex items-center text-[12pt] break-all">
-          {typeof valueData === "string"
-            ? valueData
-            : JSON.stringify(valueData)}
+        <div className="flex items-center gap-[0.5rem]">
+          {value.type === ValueType.COLOR && valueData ? (
+            <ColorSwatch
+              aria-label="color"
+              color={valueData as string}
+              size="sm"
+            />
+          ) : null}
+
+          <div
+            className={cn(
+              "flex items-center text-[12pt] break-all",
+              typeof valueData === "boolean" &&
+                (valueData ? "text-success" : "text-danger"),
+            )}
+          >
+            {typeof valueData === "string"
+              ? valueData
+              : JSON.stringify(valueData)}
+          </div>
         </div>
-      ) : null}
-      {value.type === ValueType.COLOR && valueData ? (
-        <ColorSwatch aria-label="color" color={valueData as string} size="sm" />
       ) : null}
     </div>
   );

@@ -1,9 +1,9 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { MqttContext } from "../context/mqtt-context";
 import ChipSVG from "../assets/chip.svg";
 import EmptySVG from "../assets/empty.svg";
-import { Card, cn, Tabs } from "@heroui/react";
+import { Card, Tabs } from "@heroui/react";
 import DataRow from "../components/data-row";
 import {
   ResponseStatus,
@@ -16,8 +16,6 @@ import { useTranslation } from "react-i18next";
 import { mqttQuery } from "../utils/mqtt-query";
 import QueryComponent from "../components/handler/query-component";
 import ActionComponent from "../components/handler/action-component";
-import { useScroll, motion, useMotionValueEvent } from "motion/react";
-import { AppContext } from "../context/app-context";
 
 export const Route = createFileRoute("/device")({
   component: RouteComponent,
@@ -36,17 +34,9 @@ function EmptyList() {
 
 function DeviceSchema() {
   const { t } = useTranslation();
-  const { scrollRef } = useContext(AppContext);
   const { connectionData } = useContext(MqttContext);
   const { device } = Route.useRouteContext();
   if (!connectionData || !device) throw new Error("Missing data");
-  const { scrollY } = useScroll({
-    container: scrollRef,
-  });
-  const [isCompact, setIsCompact] = useState(false);
-  useMotionValueEvent(scrollY, "change", (current) => {
-    setIsCompact(current > 0);
-  });
 
   const { data, isLoading } = useQuery({
     queryKey: ["SCHEMA", device.id],
@@ -72,11 +62,8 @@ function DeviceSchema() {
 
   return (
     <Tabs className="mt-[3rem]">
-      <Tabs.ListContainer className="sticky top-[5.5rem] z-20">
-        <Tabs.List
-          aria-label="Options"
-          className={cn(isCompact && "sticky-overlay")}
-        >
+      <Tabs.ListContainer className="sticky top-[1rem] z-10">
+        <Tabs.List aria-label="Options">
           <Tabs.Tab id="auto-fetch">
             {t("queries")}
             <Tabs.Indicator />
@@ -120,64 +107,26 @@ function DeviceSchema() {
 }
 
 function RouteComponent() {
-  const { scrollRef } = useContext(AppContext);
   const { connectionData } = useContext(MqttContext);
   const { device } = Route.useRouteContext();
-  const { scrollY } = useScroll({
-    container: scrollRef,
-  });
-  const [isCompact, setIsCompact] = useState(false);
-  useMotionValueEvent(scrollY, "change", (current) => {
-    setIsCompact(current > 10);
-  });
 
   if (!connectionData || !device) return <Navigate to="/"></Navigate>;
 
   return (
     <div className="flex flex-1 flex-col items-center">
       <div className="flex flex-1 flex-col max-w-screen-md w-full px-[1rem] pb-[5rem]">
-        <motion.div
-          layout
-          transition={{
-            layout: { type: "spring", stiffness: 300, damping: 30 },
-          }}
-          className={cn(
-            "flex flex-col sticky top-[1rem] z-20 items-center pt-[5rem] pb-[2rem] gap-[2rem]",
-            isCompact &&
-              "flex-row pt-0 pb-0 p-[0.5rem] rounded-3xl gap-[1rem] sticky-overlay shadow-2xl",
-          )}
-        >
-          <motion.div
-            layout
-            className="flex relative justify-center items-center"
-          >
-            <motion.img
-              layout
-              src={ChipSVG}
-              alt="chip"
-              className={cn("w-[12rem] z-10", isCompact && "w-[5rem]")}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            />
-            <motion.div
-              className={cn(
-                "absolute h-[10rem] w-[15rem] rounded-full bg-accent blur-2xl opacity-20",
-                isCompact && "opacity-0",
-              )}
-            />
-          </motion.div>
+        <div className="flex flex-col pt-[5rem] pb-[2rem] gap-[2rem]">
+          <div className="flex relative justify-center items-center">
+            <img src={ChipSVG} alt="chip" className="h-[7rem] z-10" />
+            <div className="flex absolute h-[10rem] w-[15rem] rounded-full bg-accent blur-2xl opacity-20"></div>
+          </div>
 
-          <motion.div
-            layout
-            className={cn(
-              "flex justify-center font-bold text-[20pt] z-10 truncate",
-              isCompact && "text-[15pt]",
-            )}
-          >
+          <div className="flex justify-center font-bold text-[20pt] z-10">
             {device.name}
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
-        <Card className={cn(isCompact && "mt-[10rem]")}>
+        <Card>
           <Card.Content>
             <DataRow name="ID" value={device.id}></DataRow>
             <DataRow name="Request topic" value={device.requestTopic}></DataRow>
