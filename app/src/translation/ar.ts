@@ -34,6 +34,7 @@ export const AR: AppTranslation = {
   system: "النظام",
   light: "فاتح",
   dark: "داكن",
+  accentColor: "لون التمييز",
   language: "اللغة",
 
   loading: "جاري التحميل...",

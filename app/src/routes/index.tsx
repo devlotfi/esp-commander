@@ -4,13 +4,13 @@ import { useContext, useEffect, useState } from "react";
 import { MqttContext } from "../context/mqtt-context";
 import { useTranslation } from "react-i18next";
 import { Plug } from "lucide-react";
-import ServerSVG from "../assets/server.svg";
 import SectionHeader from "../components/section-header";
 import type { Device } from "../types/device";
 import { v4 as uuid } from "uuid";
-import SearchSVG from "../assets/search.svg";
 import DeviceComponent from "../components/device-component";
 import type { QueryRequest } from "../types/handler-call";
+import SearchSVG from "../components/svg/SearchSVG";
+import ServerSVG from "../components/svg/ServerSVG";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
@@ -82,11 +82,7 @@ function DeviceList() {
           </div>
         ) : (
           <div className="flex flex-1 text-center justify-center items-center flex-col gap-[1rem] px-[0.5rem]">
-            <img
-              src={SearchSVG}
-              alt="device"
-              className="h-[12rem] md:h-[15rem]"
-            />
+            <SearchSVG className="h-[12rem] md:h-[15rem]" />
             <div className="flex text-[18pt] font-bold uppercase">
               {t("searching")}...
             </div>
@@ -107,7 +103,7 @@ function RouteComponent() {
       <div className="flex flex-1 text-center justify-center items-center flex-col gap-[1rem] px-[1rem]">
         <Card className="max-w-md w-full">
           <Card.Content className="text-center items-center flex-col gap-[1rem] px-[0.5rem]">
-            <img src={ServerSVG} alt="server" className="h-[12rem]" />
+            <ServerSVG className="h-[12rem]" />
             <div className="flex text-[18pt] font-bold uppercase">
               {t("disconnected")}
             </div>

@@ -32,6 +32,7 @@ export interface AppTranslation {
   system: string;
   light: string;
   dark: string;
+  accentColor: string;
   language: string;
 
   loading: string;

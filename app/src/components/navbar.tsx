@@ -1,12 +1,12 @@
 import { Button, Chip, cn, Popover } from "@heroui/react";
 import { Cable, ChevronsLeft, CircleOff, Download, Unplug } from "lucide-react";
-import LogoSVG from "../assets/logo.svg";
 import { useContext } from "react";
 import { AppContext } from "../context/app-context";
 import { MqttContext } from "../context/mqtt-context";
 import DataRow from "./data-row";
 import { useTranslation } from "react-i18next";
 import { PWAContext } from "../context/pwa-context";
+import LogoSVG from "./svg/LogoSVG";
 
 export default function Navbar() {
   const { t } = useTranslation();
@@ -32,7 +32,7 @@ export default function Navbar() {
               )}
             />
           </Button>
-          <img src={LogoSVG} alt="logo" className="h-[3rem] md:h-[3.3rem]" />
+          <LogoSVG className="w-[3rem] md:w-[3.3rem]" />
           <div className="flex font-bold text-[17pt]">IOT COMMANDER</div>
         </div>
 

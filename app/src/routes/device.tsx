@@ -1,8 +1,6 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useContext } from "react";
 import { MqttContext } from "../context/mqtt-context";
-import ChipSVG from "../assets/chip.svg";
-import EmptySVG from "../assets/empty.svg";
 import { Card, Tabs } from "@heroui/react";
 import DataRow from "../components/data-row";
 import {
@@ -16,6 +14,8 @@ import { useTranslation } from "react-i18next";
 import { mqttQuery } from "../utils/mqtt-query";
 import QueryComponent from "../components/handler/query-component";
 import ActionComponent from "../components/handler/action-component";
+import EmptySVG from "../components/svg/EmptySVG";
+import ChipSVG from "../components/svg/ChipSVG";
 
 export const Route = createFileRoute("/device")({
   component: RouteComponent,
@@ -26,7 +26,7 @@ function EmptyList() {
 
   return (
     <div className="flex flex-col gap-[1rem] items-center py-[3rem]">
-      <img src={EmptySVG} alt="empty" className="h-[10rem]" />
+      <EmptySVG className="h-[10rem]" />
       <div className="flex uppercase font-bold text-[20pt]">{t("empty")}</div>
     </div>
   );
@@ -117,7 +117,7 @@ function RouteComponent() {
       <div className="flex flex-1 flex-col max-w-screen-md w-full px-[1rem] pb-[5rem]">
         <div className="flex flex-col pt-[5rem] pb-[2rem] gap-[2rem]">
           <div className="flex relative justify-center items-center">
-            <img src={ChipSVG} alt="chip" className="h-[7rem] z-10" />
+            <ChipSVG className="h-[7rem] z-10" />
             <div className="flex absolute h-[10rem] w-[15rem] rounded-full bg-accent blur-2xl opacity-20"></div>
           </div>
 

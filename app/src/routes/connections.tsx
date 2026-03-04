@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useContext } from "react";
 import { RxDBContext } from "../context/rxdb-context";
-import EmptySVG from "../assets/empty.svg";
 import LoadingScreen from "../components/loading-screen";
 import ErrorScreen from "../components/error-screen";
 import { useTranslation } from "react-i18next";
@@ -11,6 +10,7 @@ import SectionHeader from "../components/section-header";
 import { Plus } from "lucide-react";
 import AddConnectionModal from "../components/connection/add-connection-modal";
 import ConnectionComponent from "../components/connection/connection-component";
+import EmptySVG from "../components/svg/EmptySVG";
 
 export const Route = createFileRoute("/connections")({
   component: RouteComponent,
@@ -68,7 +68,7 @@ function RouteComponent() {
             <div className="flex flex-1 justify-center items-center px-[1rem]">
               <Card className="max-w-md w-full">
                 <Card.Content className="text-center items-center flex-col gap-[1rem] px-[0.5rem]">
-                  <img src={EmptySVG} alt="device" className="h-[10rem]" />
+                  <EmptySVG className="h-[10rem]" />
                   <div className="flex text-[18pt] font-bold uppercase">
                     {t("noConnections.title")}
                   </div>

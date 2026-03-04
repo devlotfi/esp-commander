@@ -1,5 +1,6 @@
 import { type PropsWithChildren, useEffect, useState } from "react";
 import type { AppliedThemes } from "../types/applied-theme";
+import { ThemeContextInitialValue } from "../context/theme-context";
 import { ThemeOptions } from "../types/theme-options";
 import { ThemeContext } from "../context/theme-context";
 import { Constants } from "../constants";
@@ -35,12 +36,18 @@ const initAppliedTheme = (): AppliedThemes => {
     return ThemeOptions.LIGHT;
   }
 };
+const initAccentColor = (): string => {
+  const accentColor = localStorage.getItem(Constants.ACCENT_COLOR_STORAGE_KEY);
+  document.documentElement.style.setProperty("--accent", accentColor);
+  return accentColor || ThemeContextInitialValue.accentColor;
+};
 
 export function ThemeProvider({ children }: PropsWithChildren) {
   const [themeOption, setThemeOption] =
     useState<ThemeOptions>(initThemeOption());
   const [appliedTheme, setAppliedTheme] =
     useState<AppliedThemes>(initAppliedTheme());
+  const [accentColor, setAccentColor] = useState<string>(initAccentColor());
 
   const applyTheme = (theme: ThemeOptions) => {
     const element = document.getElementById("theme-provider") as HTMLElement;
@@ -68,6 +75,12 @@ export function ThemeProvider({ children }: PropsWithChildren) {
     localStorage.setItem(Constants.THEME_STORAGE_KEY, theme);
   };
 
+  const applyAccentColor = (accentColor: string) => {
+    document.documentElement.style.setProperty("--accent", accentColor);
+    setAccentColor(accentColor);
+    localStorage.setItem(Constants.ACCENT_COLOR_STORAGE_KEY, accentColor);
+  };
+
   useEffect(() => {
     applyTheme(themeOption);
   }, [themeOption]);
@@ -77,10 +90,9 @@ export function ThemeProvider({ children }: PropsWithChildren) {
       'meta[name="theme-color"]',
     );
     if (!metaTag) return;
-
     switch (appliedTheme) {
       case ThemeOptions.LIGHT:
-        metaTag.setAttribute("content", "#DBDBDB");
+        metaTag.setAttribute("content", "#d4d4d4");
         break;
       case ThemeOptions.DARK:
         metaTag.setAttribute("content", "#282B32");
@@ -111,7 +123,9 @@ export function ThemeProvider({ children }: PropsWithChildren) {
       value={{
         themeOption: themeOption,
         appliedTheme: appliedTheme,
+        accentColor: accentColor,
         setTheme: setThemeOption,
+        applyAccentColor: applyAccentColor,
       }}
     >
       {children}

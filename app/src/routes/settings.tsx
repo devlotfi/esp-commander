@@ -1,4 +1,15 @@
-import { Card, cn, Label, ListBox, Select } from "@heroui/react";
+import {
+  Card,
+  cn,
+  ColorArea,
+  ColorField,
+  ColorPicker,
+  ColorSlider,
+  ColorSwatch,
+  Label,
+  ListBox,
+  Select,
+} from "@heroui/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
@@ -15,7 +26,8 @@ export const Route = createFileRoute("/settings")({
 });
 
 function RouteComponent() {
-  const { themeOption, setTheme } = useContext(ThemeContext);
+  const { themeOption, setTheme, accentColor, applyAccentColor } =
+    useContext(ThemeContext);
   const { t, i18n } = useTranslation();
 
   const renderFlag = (languageCode: string, className?: string) => {
@@ -107,6 +119,57 @@ function RouteComponent() {
                 </ListBox>
               </Select.Popover>
             </Select>
+
+            <ColorField
+              aria-label="color"
+              value={accentColor}
+              onChange={(value) => {
+                if (value) {
+                  applyAccentColor(value.toString("hex"));
+                }
+              }}
+            >
+              <Label>{t("accentColor")}</Label>
+              <ColorField.Group className="h-[3rem]">
+                <ColorField.Prefix>
+                  <ColorPicker
+                    value={accentColor}
+                    onChange={(value) => {
+                      if (value) {
+                        applyAccentColor(value.toString("hex"));
+                      }
+                    }}
+                  >
+                    <ColorPicker.Trigger>
+                      <ColorSwatch size="sm" />
+                    </ColorPicker.Trigger>
+                    <ColorPicker.Popover className="gap-2">
+                      <ColorArea
+                        aria-label="Color area"
+                        className="max-w-full"
+                        colorSpace="hsb"
+                        xChannel="saturation"
+                        yChannel="brightness"
+                      >
+                        <ColorArea.Thumb />
+                      </ColorArea>
+
+                      <ColorSlider
+                        aria-label="Hue slider"
+                        channel="hue"
+                        className="flex-1"
+                        colorSpace="hsb"
+                      >
+                        <ColorSlider.Track>
+                          <ColorSlider.Thumb />
+                        </ColorSlider.Track>
+                      </ColorSlider>
+                    </ColorPicker.Popover>
+                  </ColorPicker>
+                </ColorField.Prefix>
+                <ColorField.Input />
+              </ColorField.Group>
+            </ColorField>
 
             <Select
               value={i18n.language}

@@ -34,6 +34,7 @@ export const FR: AppTranslation = {
   system: "Système",
   light: "Clair",
   dark: "Sombre",
+  accentColor: "Couleur d'accentuation",
   language: "Langue",
 
   loading: "Chargement...",
