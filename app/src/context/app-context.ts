@@ -8,7 +8,7 @@ interface AppContext {
 
 export const AppContextInitialValue: AppContext = {
   scrollRef: createRef(),
-  sidebarOpen: true,
+  sidebarOpen: false,
   setSidebarOpen() {},
 };
 

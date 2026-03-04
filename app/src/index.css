@@ -180,9 +180,9 @@
     color-scheme: light;
 
     --spacing: 0.25rem;
-    --radius: 0.3rem;
+    --radius: 0.25rem;
 
-    --background: #d5d5d5;
+    --background: #cccccc;
     --foreground: #536077;
 
     --surface: #ffffff;
@@ -216,7 +216,7 @@
     --spacing: 0.25rem;
     --radius: 0.3rem;
 
-    --background: #23262b;
+    --background: #23282b;
     --foreground: #b7bdc9;
 
     --surface: #434c55;
@@ -280,57 +280,27 @@
     radial-gradient(
       color-mix(in srgb, var(--surface), transparent 90%) 2px,
       transparent 2px
-    ),
-    linear-gradient(
-      color-mix(in srgb, var(--surface), transparent 90%) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      to right,
-      color-mix(in srgb, var(--surface), transparent 90%) 1px,
-      transparent 1px
     );
 
   background-size:
     100% 100%,
     100% 100%,
-    2rem 2rem,
-    1rem 1rem,
-    1rem 1rem;
+    2rem 2rem;
 }
 
 @utility bg-main {
   background-image:
     linear-gradient(
       to top,
-      color-mix(in srgb, var(--accent), transparent 86%),
+      color-mix(in srgb, var(--accent), transparent 95%),
       transparent
     ),
     radial-gradient(
-      color-mix(in srgb, var(--surface), transparent 90%) 2px,
+      color-mix(in srgb, var(--surface), transparent 80%) 2px,
       transparent 2px
-    ),
-    linear-gradient(
-      color-mix(in srgb, var(--surface), transparent 90%) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      to right,
-      color-mix(in srgb, var(--surface), transparent 90%) 1px,
-      transparent 1px
     );
 
   background-size:
     100% 100%,
-    2rem 2rem,
-    1rem 1rem,
-    1rem 1rem;
-}
-
-.sticky-overlay {
-  @apply border border-border;
-  background: var(--background) !important;
-  box-shadow:
-    color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px inset,
-    0px 4px 8px rgba(0, 0, 0, 0.1) !important;
+    2rem 2rem;
 }

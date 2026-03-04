@@ -1,13 +1,7 @@
 import { motion } from "motion/react";
 import { useContext, type PropsWithChildren } from "react";
 import { AppContext } from "../context/app-context";
-import {
-  Button,
-  cn,
-  Tooltip,
-  useMediaQuery,
-  type ButtonProps,
-} from "@heroui/react";
+import { Button, cn, Tooltip, type ButtonProps } from "@heroui/react";
 import { DynamicIcon, type IconName } from "lucide-react/dynamic";
 import {
   useMatch,
@@ -15,6 +9,7 @@ import {
   type FileRouteTypes,
 } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { useMediaQuery } from "../hooks/use-media-query";
 
 function SidebarButton({
   path,
@@ -42,6 +37,7 @@ function SidebarButton({
           sidebarOpen ? "lg:w-full" : "gap-0 w-auto",
           isActive &&
             "bg-[color-mix(in_srgb,var(--surface),transparent_80%)] border-border",
+          !isActive && "shadow-none",
           className,
         )}
         onPress={() => {
@@ -174,7 +170,7 @@ export default function Sidebar() {
     <div className="hidden md:flex p-[1rem]">
       <div
         className={cn(
-          "flex relative flex-col min-w-[5rem] duration-500 transition-[width] bg-[color-mix(in_srgb,var(--surface),transparent_85%)] border rounded-4xl",
+          "flex relative flex-col min-w-[5rem] duration-500 transition-[width] bg-[color-mix(in_srgb,var(--surface),transparent_85%)] border rounded-3xl",
           sidebarOpen ? "lg:w-[16rem]" : "w-[5rem]",
         )}
       >
