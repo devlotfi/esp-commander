@@ -32,8 +32,10 @@ export default function Navbar() {
               )}
             />
           </Button>
-          <LogoSVG className="w-[3rem] md:w-[3.3rem]" />
-          <div className="flex font-bold text-[17pt]">IOT COMMANDER</div>
+          <LogoSVG className="w-[3rem] md:w-[3.3rem] ml-[0.5rem]" />
+          <div className="flex font-bold text-[14pt] md:text-[16pt]">
+            IOT COMMANDER
+          </div>
         </div>
 
         <div className="flex gap-[0.5rem]">

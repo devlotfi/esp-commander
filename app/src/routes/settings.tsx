@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   cn,
   ColorArea,
@@ -16,9 +17,12 @@ import { useTranslation } from "react-i18next";
 import ArSVG from "../assets/flags/ar.svg";
 import FrSVG from "../assets/flags/fr.svg";
 import EnSVG from "../assets/flags/en.svg";
-import { ThemeContext } from "../context/theme-context";
+import {
+  ThemeContext,
+  ThemeContextInitialValue,
+} from "../context/theme-context";
 import { ThemeOptions } from "../types/theme-options";
-import { Computer, Moon, Sun } from "lucide-react";
+import { Computer, Moon, RotateCcw, Sun } from "lucide-react";
 import SectionHeader from "../components/section-header";
 
 export const Route = createFileRoute("/settings")({
@@ -83,7 +87,7 @@ function RouteComponent() {
                     textValue={t("system")}
                   >
                     <div className="flex gap-[1rem] items-center">
-                      <div className="flex justify-center items-center h-[2rem] w-[2rem] bg-accent rounded-lg">
+                      <div className="flex justify-center items-center h-[2rem] w-[2rem] bg-accent rounded-2xl">
                         <Computer className="text-accent-foreground"></Computer>
                       </div>
                       <div className="flex">{t("system")}</div>
@@ -96,7 +100,7 @@ function RouteComponent() {
                     textValue={t("light")}
                   >
                     <div className="flex gap-[1rem] items-center">
-                      <div className="flex justify-center items-center h-[2rem] w-[2rem] bg-accent rounded-lg">
+                      <div className="flex justify-center items-center h-[2rem] w-[2rem] bg-accent rounded-2xl">
                         <Sun className="text-accent-foreground"></Sun>
                       </div>
                       <div className="flex">{t("light")}</div>
@@ -109,7 +113,7 @@ function RouteComponent() {
                     textValue={t("dark")}
                   >
                     <div className="flex gap-[1rem] items-center">
-                      <div className="flex justify-center items-center h-[2rem] w-[2rem] bg-accent rounded-lg">
+                      <div className="flex justify-center items-center h-[2rem] w-[2rem] bg-accent rounded-2xl">
                         <Moon className="text-accent-foreground"></Moon>
                       </div>
                       <div className="flex">{t("dark")}</div>
@@ -122,6 +126,7 @@ function RouteComponent() {
 
             <ColorField
               aria-label="color"
+              fullWidth
               value={accentColor}
               onChange={(value) => {
                 if (value) {
@@ -130,45 +135,58 @@ function RouteComponent() {
               }}
             >
               <Label>{t("accentColor")}</Label>
-              <ColorField.Group className="h-[3rem]">
-                <ColorField.Prefix>
-                  <ColorPicker
-                    value={accentColor}
-                    onChange={(value) => {
-                      if (value) {
-                        applyAccentColor(value.toString("hex"));
-                      }
-                    }}
-                  >
-                    <ColorPicker.Trigger>
-                      <ColorSwatch size="sm" />
-                    </ColorPicker.Trigger>
-                    <ColorPicker.Popover className="gap-2">
-                      <ColorArea
-                        aria-label="Color area"
-                        className="max-w-full"
-                        colorSpace="hsb"
-                        xChannel="saturation"
-                        yChannel="brightness"
-                      >
-                        <ColorArea.Thumb />
-                      </ColorArea>
+              <div className="flex items-center gap-[0.5rem]">
+                <ColorField.Group className="h-[3rem] flex-1">
+                  <ColorField.Prefix>
+                    <ColorPicker
+                      value={accentColor}
+                      onChange={(value) => {
+                        if (value) {
+                          applyAccentColor(value.toString("hex"));
+                        }
+                      }}
+                    >
+                      <ColorPicker.Trigger>
+                        <ColorSwatch size="sm" />
+                      </ColorPicker.Trigger>
+                      <ColorPicker.Popover className="gap-2">
+                        <ColorArea
+                          aria-label="Color area"
+                          className="max-w-full"
+                          colorSpace="hsb"
+                          xChannel="saturation"
+                          yChannel="brightness"
+                        >
+                          <ColorArea.Thumb />
+                        </ColorArea>
 
-                      <ColorSlider
-                        aria-label="Hue slider"
-                        channel="hue"
-                        className="flex-1"
-                        colorSpace="hsb"
-                      >
-                        <ColorSlider.Track>
-                          <ColorSlider.Thumb />
-                        </ColorSlider.Track>
-                      </ColorSlider>
-                    </ColorPicker.Popover>
-                  </ColorPicker>
-                </ColorField.Prefix>
-                <ColorField.Input />
-              </ColorField.Group>
+                        <ColorSlider
+                          aria-label="Hue slider"
+                          channel="hue"
+                          className="flex-1"
+                          colorSpace="hsb"
+                        >
+                          <ColorSlider.Track>
+                            <ColorSlider.Thumb />
+                          </ColorSlider.Track>
+                        </ColorSlider>
+                      </ColorPicker.Popover>
+                    </ColorPicker>
+                  </ColorField.Prefix>
+                  <ColorField.Input />
+                </ColorField.Group>
+
+                <Button
+                  isIconOnly
+                  variant="outline"
+                  size="lg"
+                  onPress={() =>
+                    applyAccentColor(ThemeContextInitialValue.accentColor)
+                  }
+                >
+                  <RotateCcw></RotateCcw>
+                </Button>
+              </div>
             </ColorField>
 
             <Select

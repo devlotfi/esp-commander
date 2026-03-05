@@ -62,7 +62,7 @@ function DeviceSchema() {
 
   return (
     <Tabs className="mt-[3rem]">
-      <Tabs.ListContainer className="sticky top-[1rem] z-10">
+      <Tabs.ListContainer>
         <Tabs.List aria-label="Options">
           <Tabs.Tab id="auto-fetch">
             {t("queries")}
