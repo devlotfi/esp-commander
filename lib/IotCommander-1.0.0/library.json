@@ -1,0 +1,19 @@
+{
+  "name": "IotCommander",
+  "version": "1.0.0",
+  "description": "Embedded command framework for ESP32",
+  "keywords": ["embedded", "json", "variant"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/devlotfi/iot-commander"
+  },
+  "authors": [
+    {
+      "name": "Debbal Lotfi",
+      "email": "debbal.lotfi.dev@gmail.com"
+    }
+  ],
+  "frameworks": ["arduino"],
+  "platforms": ["espressif32", "atmelavr"],
+  "dependencies": ["bblanchon/ArduinoJson", "etlcpp/Embedded Template Library"]
+}
