@@ -81,6 +81,7 @@ function DeviceSchema() {
               <QueryComponent
                 key={`${query.name}-${index}`}
                 query={query}
+                delay={index * 300}
               ></QueryComponent>
             ))
           ) : (

@@ -9,12 +9,14 @@ import EmptyHandlerRow from "./empty-handler-row";
 import { Braces, RefreshCw, SquareFunction } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { mqttQuery } from "../../utils/mqtt-query";
+import { sleep } from "../../utils/sleep";
 
 interface QueryComponentProps {
+  delay: number;
   query: IOTCQuery;
 }
 
-export default function QueryComponent({ query }: QueryComponentProps) {
+export default function QueryComponent({ query, delay }: QueryComponentProps) {
   const { t } = useTranslation();
   const { connectionData } = useContext(MqttContext);
   const { device } = useRouteContext({ from: "/device" });
@@ -24,7 +26,7 @@ export default function QueryComponent({ query }: QueryComponentProps) {
     queryKey: ["QUERY", query.name],
     queryFn: async () => {
       console.log("fetch");
-
+      await sleep(delay);
       const res = await mqttQuery({
         client: connectionData.client,
         requestTopic: device.requestTopic,
