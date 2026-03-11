@@ -49,7 +49,6 @@ export default defineConfig({
       },
     }),
   ],
-  base: "/iot-commander/",
   build: {
     outDir: "../docs",
     emptyOutDir: true,

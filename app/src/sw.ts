@@ -10,9 +10,6 @@ import { NavigationRoute, registerRoute } from "workbox-routing";
 
 declare let self: ServiceWorkerGlobalScope;
 
-// Vite base path ("/iot-commander/")
-const BASE = import.meta.env.BASE_URL;
-
 // precache assets
 precacheAndRoute(self.__WB_MANIFEST);
 
@@ -22,13 +19,11 @@ cleanupOutdatedCaches();
 let allowlist: RegExp[] | undefined;
 
 // dev mode disables full precache
-if (import.meta.env.DEV) allowlist = [new RegExp(`^${BASE}$`)];
+if (import.meta.env.DEV) allowlist = [/^\/$/];
 
 // SPA navigation fallback
 registerRoute(
-  new NavigationRoute(createHandlerBoundToURL(`${BASE}index.html`), {
-    allowlist,
-  }),
+  new NavigationRoute(createHandlerBoundToURL("index.html"), { allowlist }),
 );
 
 self.skipWaiting();
@@ -47,9 +42,9 @@ self.addEventListener("push", (event) => {
 
   const options: NotificationOptions = {
     body: data.body,
-    icon: `${BASE}pwa-192x192.png`,
-    badge: `${BASE}pwa-192x192.png`,
-    data: data.url || BASE,
+    icon: "/pwa-192x192.png",
+    badge: "/pwa-192x192.png",
+    data: data.url || "/",
   };
 
   event.waitUntil(self.registration.showNotification(title, options));
@@ -58,7 +53,7 @@ self.addEventListener("push", (event) => {
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
-  const url = event.notification.data || BASE;
+  const url = event.notification.data || "/";
 
   event.waitUntil(
     self.clients
