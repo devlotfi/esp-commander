@@ -173,6 +173,10 @@ export default function Sidebar() {
           "flex relative flex-col min-w-[5rem] duration-500 transition-[width] bg-[color-mix(in_srgb,var(--surface),transparent_85%)] border rounded-3xl",
           sidebarOpen ? "lg:w-[16rem]" : "w-[5rem]",
         )}
+        style={{
+          boxShadow:
+            "color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px inset",
+        }}
       >
         <div className="flex flex-col flex-1 justify-center items-center gap-[0.5rem] p-[0.7rem]">
           <SidebarButton path="/" icon={"cpu"}>

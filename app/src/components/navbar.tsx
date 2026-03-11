@@ -16,7 +16,13 @@ export default function Navbar() {
 
   return (
     <div className="flex p-0 md:p-[1rem] md:pl-0">
-      <div className="flex flex-1 justify-between items-center h-[4rem] px-[0.7rem] rounded-bl-4xl rounded-br-4xl md:rounded-3xl border-b md:border bg-[color-mix(in_srgb,var(--surface),transparent_85%)]">
+      <div
+        className="flex flex-1 justify-between items-center h-[4rem] px-[0.7rem] rounded-bl-4xl rounded-br-4xl md:rounded-3xl border-b md:border bg-[color-mix(in_srgb,var(--surface),transparent_85%)]"
+        style={{
+          boxShadow:
+            "color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px inset",
+        }}
+      >
         <div className="flex items-center gap-[1rem]">
           <Button
             isIconOnly

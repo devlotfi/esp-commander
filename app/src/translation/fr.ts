@@ -65,4 +65,15 @@ export const FR: AppTranslation = {
   online: "En ligne",
   searching: "Recherche en cours",
   notConnected: "Vous n'êtes connecté à aucun courtier",
+
+  display: "Affichage",
+  notifications: "Notifications",
+  test: "Tester",
+  apiUrl: "URL de l'API",
+  apiSecret: "Secret de l'API",
+  vapidPublicKey: "Clé publique VAPID",
+  subscribe: "S'abonner",
+  unsubscribe: "Se désabonner",
+  notificationsSubscribed: "Abonné aux notifications",
+  notificationsNotSubscribed: "Non abonné aux notifications",
 };

@@ -62,4 +62,15 @@ export interface AppTranslation {
   online: string;
   searching: string;
   notConnected: string;
+
+  display: string;
+  notifications: string;
+  test: string;
+  apiUrl: string;
+  apiSecret: string;
+  vapidPublicKey: string;
+  subscribe: string;
+  unsubscribe: string;
+  notificationsSubscribed: string;
+  notificationsNotSubscribed: string;
 }

@@ -65,4 +65,15 @@ export const AR: AppTranslation = {
   online: "متصل الآن",
   searching: "جاري البحث",
   notConnected: "أنت غير متصل بأي وسيط",
+
+  display: "العرض",
+  notifications: "الإشعارات",
+  test: "تجربة",
+  apiUrl: "رابط API",
+  apiSecret: "سر API",
+  vapidPublicKey: "مفتاح VAPID العام",
+  subscribe: "اشتراك",
+  unsubscribe: "إلغاء الاشتراك",
+  notificationsSubscribed: "مشترك في الإشعارات",
+  notificationsNotSubscribed: "غير مشترك في الإشعارات",
 };

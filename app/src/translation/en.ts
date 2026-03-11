@@ -65,4 +65,15 @@ export const EN: AppTranslation = {
   online: "Online",
   searching: "Searching",
   notConnected: "You are not connected to any broker",
+
+  display: "Display",
+  notifications: "Notifications",
+  test: "Test",
+  apiUrl: "API URL",
+  apiSecret: "API Secret",
+  vapidPublicKey: "VAPID Public Key",
+  subscribe: "Subscribe",
+  unsubscribe: "Unsubscribe",
+  notificationsSubscribed: "Subscribed to notifications",
+  notificationsNotSubscribed: "Not subscribed to notifications",
 };

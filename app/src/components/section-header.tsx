@@ -29,7 +29,7 @@ export default function SectionHeader({
     >
       <div
         className={cn(
-          "flex justify-center items-center rounded-2xl h-[3rem] w-[3rem] bg-accent",
+          "flex justify-center items-center rounded-2xl size-[3rem] bg-accent",
           classNameIconWrapper,
         )}
         style={{
@@ -40,7 +40,7 @@ export default function SectionHeader({
       >
         <DynamicIcon
           name={icon}
-          className="text-accent-foreground h-[2rem] w-[2rem]"
+          className="text-accent-foreground size-[2rem]"
         ></DynamicIcon>
       </div>
       <div

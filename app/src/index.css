@@ -173,6 +173,13 @@
   .skeleton {
     background: color-mix(in srgb, var(--surface), transparent 80%) !important;
   }
+
+  .alert {
+    @apply border border-border;
+    background: color-mix(in srgb, var(--surface), transparent 80%);
+    box-shadow: color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px
+      inset;
+  }
 }
 
 @layer base {
