@@ -546,9 +546,9 @@ function NotificationsSettings() {
           {data.subscription ? (
             <Button
               fullWidth
-              variant="danger"
+              variant="outline"
               type="button"
-              className="mt-[1rem]"
+              className="mt-[1rem] text-danger"
               isPending={unsubscribeMutation.isPending}
               onPress={() => unsubscribeMutation.mutate()}
             >
