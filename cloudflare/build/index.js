@@ -27629,7 +27629,10 @@ subscriptions.openapi(
               p256dh: subscription.p256dh
             }
           },
-          payload
+          payload,
+          {
+            urgency: "high"
+          }
         )
       )
     );
@@ -27693,7 +27696,10 @@ subscriptions.openapi(
               p256dh: subscription.p256dh
             }
           },
-          payload
+          payload,
+          {
+            urgency: "high"
+          }
         )
       )
     );

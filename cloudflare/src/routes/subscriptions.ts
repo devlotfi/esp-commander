@@ -107,6 +107,9 @@ subscriptions.openapi(
             },
           },
           payload,
+          {
+            urgency: "high",
+          },
         ),
       ),
     );
@@ -174,6 +177,9 @@ subscriptions.openapi(
             },
           },
           payload,
+          {
+            urgency: "high",
+          },
         ),
       ),
     );

@@ -31,6 +31,14 @@ An app to controll IOT devices using MQTT
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/rxdb.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/heroui.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/vite.svg">
+  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/hashicorp-terraform.svg">
+  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/openapi.svg">
+</p>
+
+## Services
+
+<p float="left">
+  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/cloudflare.svg">
 </p>
 
 ## IOT
