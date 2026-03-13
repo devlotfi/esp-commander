@@ -3,11 +3,30 @@ terraform {
     cloudflare = {
       source = "cloudflare/cloudflare"
     }
+    local = {
+      source = "hashicorp/local"
+    }
   }
 }
 
 provider "cloudflare" {
   api_token = var.cloudflare_api_token
+}
+
+resource "local_file" "env_file" {
+  filename = "../.env"
+
+  content = <<EOF
+# Drizzle Env
+CLOUDFLARE_ACCOUNT_ID=${var.account_id}
+CLOUDFLARE_D1_TOKEN=${var.cloudflare_api_token}
+CLOUDFLARE_DATABASE_ID=${cloudflare_d1_database.db.id}
+
+# Worker Env
+API_SECRET=${var.api_secret}
+VAPID_PUBLIC_KEY=${var.vapid_public_key}
+VAPID_PRIVATE_KEY=${var.vapid_private_key}
+EOF
 }
 
 # -----------------------------
@@ -58,7 +77,7 @@ resource "cloudflare_worker_version" "version" {
     {
       name         = "index.mjs"
       content_type = "application/javascript+module"
-      content_file = "../build/index.js"
+      content_file = "../dist/index.js"
     }
   ]
 

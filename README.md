@@ -29,6 +29,7 @@ An app to controll IOT devices using MQTT
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/tanstack-router.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/tanstack-query.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/rxdb.svg">
+  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/drizzle.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/heroui.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/vite.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/hashicorp-terraform.svg">
@@ -39,6 +40,7 @@ An app to controll IOT devices using MQTT
 
 <p float="left">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/cloudflare.svg">
+  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/netlify.svg">
 </p>
 
 ## IOT

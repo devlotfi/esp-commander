@@ -14,6 +14,7 @@
   "d1_databases": [
     {
       "binding": "D1_DB",
+      "migrations_dir": "drizzle",
     },
   ],
   /**

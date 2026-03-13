@@ -1,8 +1,10 @@
 import { HonoBindings } from "../types/hono-bindings";
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { env } from "cloudflare:workers";
-import webpush, { type PushSubscription } from "web-push";
-import { SubscriptionRow } from "../models/subscription";
+import webpush from "web-push";
+// 1. Import Drizzle dependencies
+import { drizzle } from "drizzle-orm/d1";
+import { subscriptions as subscriptionsTable } from "../db/schema"; // Renamed to avoid conflict
 
 webpush.setVapidDetails(
   "mailto:test@test.com",
@@ -16,11 +18,7 @@ subscriptions.openapi(
   createRoute({
     method: "post",
     path: "/add",
-    security: [
-      {
-        ApiKeyAuth: [],
-      },
-    ],
+    security: [{ ApiKeyAuth: [] }],
     request: {
       body: {
         content: {
@@ -41,9 +39,7 @@ subscriptions.openapi(
       200: {
         content: {
           "application/json": {
-            schema: z.object({
-              success: z.boolean(),
-            }),
+            schema: z.object({ success: z.boolean() }),
           },
         },
         description: "Add subscription",
@@ -52,14 +48,22 @@ subscriptions.openapi(
   }),
   async (c) => {
     const sub = await c.req.valid("json");
-    await c.env.D1_DB.prepare(
-      "INSERT INTO Subscriptions (endpoint, expiration_time, p256dh, auth) VALUES (?, ?, ?, ?)",
-    )
-      .bind(sub.endpoint, sub.expirationTime, sub.keys.p256dh, sub.keys.auth)
-      .run();
-    return c.json({
-      success: true,
-    });
+
+    // 2. Initialize Drizzle
+    const db = drizzle(c.env.D1_DB);
+
+    // 3. Use Drizzle Insert
+    await db
+      .insert(subscriptionsTable)
+      .values({
+        endpoint: sub.endpoint,
+        expirationTime: sub.expirationTime,
+        p256dh: sub.keys.p256dh,
+        auth: sub.keys.auth,
+      })
+      .onConflictDoNothing(); // Good practice for duplicate endpoints
+
+    return c.json({ success: true });
   },
 );
 
@@ -67,18 +71,12 @@ subscriptions.openapi(
   createRoute({
     method: "post",
     path: "/test",
-    security: [
-      {
-        ApiKeyAuth: [],
-      },
-    ],
+    security: [{ ApiKeyAuth: [] }],
     responses: {
       200: {
         content: {
           "application/json": {
-            schema: z.object({
-              success: z.boolean(),
-            }),
+            schema: z.object({ success: z.boolean() }),
           },
         },
         description: "Test subscription",
@@ -86,49 +84,44 @@ subscriptions.openapi(
     },
   }),
   async (c) => {
-    const { results } = (await c.env.D1_DB.prepare(
-      "SELECT * FROM Subscriptions",
-    ).run()) as { results: SubscriptionRow[] };
+    const db = drizzle(c.env.D1_DB);
+
+    // 4. Use Drizzle Select
+    const allSubscriptions = await db.select().from(subscriptionsTable);
 
     const payload = JSON.stringify({
       title: "Push Working",
       body: "Notification from server",
       url: "/",
     });
+
     await Promise.allSettled(
-      results.map((subscription) =>
+      allSubscriptions.map((subscription) =>
         webpush.sendNotification(
           {
             endpoint: subscription.endpoint,
-            expirationTime: subscription.expiration_time,
+            expirationTime: subscription.expirationTime,
             keys: {
               auth: subscription.auth,
               p256dh: subscription.p256dh,
             },
           },
           payload,
-          {
-            urgency: "high",
-          },
+          { urgency: "high" },
         ),
       ),
     );
 
-    return c.json({
-      success: true,
-    });
+    return c.json({ success: true });
   },
 );
 
+// Note: The "/send" route follows the same logic as "/test" using db.select()
 subscriptions.openapi(
   createRoute({
     method: "post",
     path: "/send",
-    security: [
-      {
-        ApiKeyAuth: [],
-      },
-    ],
+    security: [{ ApiKeyAuth: [] }],
     request: {
       body: {
         content: {
@@ -145,9 +138,7 @@ subscriptions.openapi(
       200: {
         content: {
           "application/json": {
-            schema: z.object({
-              success: z.boolean(),
-            }),
+            schema: z.object({ success: z.boolean() }),
           },
         },
         description: "Send push notification",
@@ -156,37 +147,34 @@ subscriptions.openapi(
   }),
   async (c) => {
     const json = await c.req.valid("json");
-    const { results } = (await c.env.D1_DB.prepare(
-      "SELECT * FROM Subscriptions",
-    ).run()) as { results: SubscriptionRow[] };
+    const db = drizzle(c.env.D1_DB);
+
+    const allSubscriptions = await db.select().from(subscriptionsTable);
 
     const payload = JSON.stringify({
       title: json.title,
       body: json.body,
       url: "/",
     });
+
     await Promise.allSettled(
-      results.map((subscription) =>
+      allSubscriptions.map((subscription) =>
         webpush.sendNotification(
           {
             endpoint: subscription.endpoint,
-            expirationTime: subscription.expiration_time,
+            expirationTime: subscription.expirationTime,
             keys: {
               auth: subscription.auth,
               p256dh: subscription.p256dh,
             },
           },
           payload,
-          {
-            urgency: "high",
-          },
+          { urgency: "high" },
         ),
       ),
     );
 
-    return c.json({
-      success: true,
-    });
+    return c.json({ success: true });
   },
 );
 
