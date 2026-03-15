@@ -107,7 +107,7 @@ subscriptions.openapi(
             },
           },
           payload,
-          { urgency: "high" },
+          { urgency: "high", TTL: 60 * 60 * 24 },
         ),
       ),
     );
@@ -169,7 +169,7 @@ subscriptions.openapi(
             },
           },
           payload,
-          { urgency: "high" },
+          { urgency: "high", TTL: 60 * 60 * 24 },
         ),
       ),
     );
