@@ -100,7 +100,7 @@ subscriptions.openapi(
         webpush.sendNotification(
           {
             endpoint: subscription.endpoint,
-            expirationTime: subscription.expirationTime,
+            expirationTime: subscription.expirationTime ?? undefined,
             keys: {
               auth: subscription.auth,
               p256dh: subscription.p256dh,
@@ -154,7 +154,7 @@ subscriptions.openapi(
     const payload = JSON.stringify({
       title: json.title,
       body: json.body,
-      url: "/",
+      //url: "/",
     });
 
     await Promise.allSettled(
@@ -162,7 +162,7 @@ subscriptions.openapi(
         webpush.sendNotification(
           {
             endpoint: subscription.endpoint,
-            expirationTime: subscription.expirationTime,
+            expirationTime: subscription.expirationTime ?? undefined,
             keys: {
               auth: subscription.auth,
               p256dh: subscription.p256dh,

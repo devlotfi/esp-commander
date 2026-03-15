@@ -26,7 +26,9 @@ registerRoute(
   new NavigationRoute(createHandlerBoundToURL("index.html"), { allowlist }),
 );
 
-self.skipWaiting();
+self.addEventListener("install", () => {
+  self.skipWaiting();
+});
 clientsClaim();
 
 /* -----------------------------
@@ -43,6 +45,7 @@ self.addEventListener("push", (event) => {
     body: data.body,
     icon: `${self.location.origin}/pwa-192x192.png`,
     badge: `${self.location.origin}/pwa-192x192.png`,
+    tag: data.tag || "default",
     data: data.url || "/",
   };
 
