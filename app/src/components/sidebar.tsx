@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useMediaQuery } from "../hooks/use-media-query";
+import LogoSVG from "./svg/LogoSVG";
 
 function SidebarButton({
   path,
@@ -178,6 +179,20 @@ export default function Sidebar() {
             "color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px inset",
         }}
       >
+        <div className="flex h-[4rem] justify-center items-center w-full absolute top-0">
+          <div
+            className={cn(
+              "hidden lg:flex items-center gap-[1rem] duration-300 transition-opacity",
+              !sidebarOpen && "opacity-0",
+            )}
+          >
+            <LogoSVG className="w-[3rem] md:w-[3.3rem]" />
+            <div className="flex font-bold text-[12pt] md:text-[13pt] whitespace-nowrap">
+              IOT COMMANDER
+            </div>
+          </div>
+        </div>
+
         <div className="flex flex-col flex-1 justify-center items-center gap-[0.5rem] p-[0.7rem]">
           <SidebarButton path="/" icon={"cpu"}>
             {t("devices")}

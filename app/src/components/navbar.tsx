@@ -38,9 +38,17 @@ export default function Navbar() {
               )}
             />
           </Button>
-          <LogoSVG className="w-[3rem] md:w-[3.3rem] ml-[0.5rem]" />
-          <div className="flex font-bold text-[14pt] md:text-[16pt]">
-            IOT COMMANDER
+
+          <div
+            className={cn(
+              "flex items-center gap-[1rem] duration-300 transition-opacity",
+              sidebarOpen && "lg:opacity-0",
+            )}
+          >
+            <LogoSVG className="w-[3rem] md:w-[3.3rem] ml-[0.5rem]" />
+            <div className="flex font-bold text-[14pt] md:text-[16pt]">
+              IOT COMMANDER
+            </div>
           </div>
         </div>
 

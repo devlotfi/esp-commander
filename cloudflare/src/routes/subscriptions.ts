@@ -6,12 +6,6 @@ import webpush from "web-push";
 import { drizzle } from "drizzle-orm/d1";
 import { subscriptions as subscriptionsTable } from "../db/schema"; // Renamed to avoid conflict
 
-webpush.setVapidDetails(
-  "mailto:test@test.com",
-  env.VAPID_PUBLIC_KEY,
-  env.VAPID_PRIVATE_KEY,
-);
-
 const subscriptions = new OpenAPIHono<HonoBindings>();
 
 subscriptions.openapi(
