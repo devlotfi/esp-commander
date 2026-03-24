@@ -8,7 +8,7 @@ export const AR: AppTranslation = {
   edit: "تعديل",
   delete: "حذف",
   noConnection: "غير متصل",
-
+  reset: "إعادة ضبط",
   deleteConfirmation: "هل أنت متأكد أنك تريد حذف هذا العنصر؟",
   cancel: "إلغاء",
 

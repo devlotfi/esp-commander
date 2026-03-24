@@ -8,7 +8,7 @@ export const FR: AppTranslation = {
   edit: "Modifier",
   delete: "Supprimer",
   noConnection: "Non connecté",
-
+  reset: "Réinitialiser",
   deleteConfirmation: "Êtes-vous sûr de vouloir supprimer cet élément ?",
   cancel: "Annuler",
 

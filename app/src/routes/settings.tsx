@@ -202,58 +202,58 @@ function DisplaySettings() {
           }}
         >
           <Label>{t("accentColor")}</Label>
-          <div className="flex items-center gap-[0.5rem]">
-            <ColorField.Group className="h-[3rem] flex-1">
-              <ColorField.Prefix>
-                <ColorPicker
-                  value={accentColor}
-                  onChange={(value) => {
-                    if (value) {
-                      applyAccentColor(value.toString("hex"));
-                    }
-                  }}
-                >
-                  <ColorPicker.Trigger>
-                    <ColorSwatch size="sm" />
-                  </ColorPicker.Trigger>
-                  <ColorPicker.Popover className="gap-2">
-                    <ColorArea
-                      aria-label="Color area"
-                      className="max-w-full"
-                      colorSpace="hsb"
-                      xChannel="saturation"
-                      yChannel="brightness"
-                    >
-                      <ColorArea.Thumb />
-                    </ColorArea>
 
-                    <ColorSlider
-                      aria-label="Hue slider"
-                      channel="hue"
-                      className="flex-1"
-                      colorSpace="hsb"
-                    >
-                      <ColorSlider.Track>
-                        <ColorSlider.Thumb />
-                      </ColorSlider.Track>
-                    </ColorSlider>
-                  </ColorPicker.Popover>
-                </ColorPicker>
-              </ColorField.Prefix>
-              <ColorField.Input />
-            </ColorField.Group>
+          <ColorField.Group className="h-[3rem]">
+            <ColorField.Prefix>
+              <ColorPicker
+                value={accentColor}
+                onChange={(value) => {
+                  if (value) {
+                    applyAccentColor(value.toString("hex"));
+                  }
+                }}
+              >
+                <ColorPicker.Trigger>
+                  <ColorSwatch size="sm" />
+                </ColorPicker.Trigger>
+                <ColorPicker.Popover className="gap-2">
+                  <ColorArea
+                    aria-label="Color area"
+                    className="max-w-full"
+                    colorSpace="hsb"
+                    xChannel="saturation"
+                    yChannel="brightness"
+                  >
+                    <ColorArea.Thumb />
+                  </ColorArea>
 
-            <Button
-              isIconOnly
-              variant="outline"
-              size="lg"
-              onPress={() =>
-                applyAccentColor(ThemeContextInitialValue.accentColor)
-              }
-            >
-              <RotateCcw></RotateCcw>
-            </Button>
-          </div>
+                  <ColorSlider
+                    aria-label="Hue slider"
+                    channel="hue"
+                    className="flex-1"
+                    colorSpace="hsb"
+                  >
+                    <ColorSlider.Track>
+                      <ColorSlider.Thumb />
+                    </ColorSlider.Track>
+                  </ColorSlider>
+                </ColorPicker.Popover>
+              </ColorPicker>
+            </ColorField.Prefix>
+            <ColorField.Input />
+          </ColorField.Group>
+
+          <Button
+            fullWidth
+            variant="outline"
+            size="lg"
+            onPress={() =>
+              applyAccentColor(ThemeContextInitialValue.accentColor)
+            }
+          >
+            <RotateCcw></RotateCcw>
+            {t("reset")}
+          </Button>
         </ColorField>
 
         <Select

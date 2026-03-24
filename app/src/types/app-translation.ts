@@ -6,7 +6,7 @@ export interface AppTranslation {
   edit: string;
   delete: string;
   noConnection: string;
-
+  reset: string;
   deleteConfirmation: string;
   cancel: string;
 
