@@ -3,8 +3,6 @@ import RequiredConnectionProvider from "../provider/required-connection-provider
 import RequiredGeminiProvider from "../provider/required-gemini-provider";
 import AIDasboard from "../components/ai/ai-dashboard";
 
-// AIzaSyAhepEarYPcAGN89iLFKSQNAq3IQIJRL14
-
 export const Route = createFileRoute("/ai")({
   component: RouteComponent,
 });
