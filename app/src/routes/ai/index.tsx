@@ -20,6 +20,7 @@ import type { ModelResponseData } from "../../types/model-response-data";
 import ModelMessage from "../../components/ai/model-message";
 import UserMessage from "../../components/ai/user-message";
 import { SchemaContext } from "../../context/schema-context";
+import { Constants } from "../../constants";
 
 export const Route = createFileRoute("/ai/")({
   component: RouteComponent,
@@ -104,7 +105,7 @@ function RouteComponent() {
       console.log("responding");
 
       const response = await ai.models.generateContent({
-        model: "gemini-3.1-flash-lite-preview",
+        model: Constants.AI_CHAT_MODEL,
         contents: contentsRef.current,
         config: {
           tools: [
@@ -227,17 +228,19 @@ function RouteComponent() {
             className: "px-[0.5rem]",
           }}
           prefix={
-            <Button
-              isIconOnly
-              variant="outline"
-              className="bg-[color-mix(in_srgb,var(--surface),transparent_70%)] rounded-2xl text-foreground"
-              onPress={() => {
-                contentsRef.current = [];
-                setContents([]);
-              }}
-            >
-              <Trash className="size-[1.3rem] text-danger"></Trash>
-            </Button>
+            contents.length ? (
+              <Button
+                isIconOnly
+                variant="outline"
+                className="bg-[color-mix(in_srgb,var(--surface),transparent_70%)] rounded-2xl text-foreground"
+                onPress={() => {
+                  contentsRef.current = [];
+                  setContents([]);
+                }}
+              >
+                <Trash className="size-[1.3rem] text-danger"></Trash>
+              </Button>
+            ) : undefined
           }
           suffix={
             <Button

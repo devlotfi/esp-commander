@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as DeviceRouteImport } from './routes/device'
 import { Route as ConnectionsRouteImport } from './routes/connections'
-import { Route as AiLolRouteImport } from './routes/ai-lol'
 import { Route as AiRouteRouteImport } from './routes/ai/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AiIndexRouteImport } from './routes/ai/index'
@@ -31,11 +30,6 @@ const DeviceRoute = DeviceRouteImport.update({
 const ConnectionsRoute = ConnectionsRouteImport.update({
   id: '/connections',
   path: '/connections',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AiLolRoute = AiLolRouteImport.update({
-  id: '/ai-lol',
-  path: '/ai-lol',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AiRouteRoute = AiRouteRouteImport.update({
@@ -62,7 +56,6 @@ const AiLiveRoute = AiLiveRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ai': typeof AiRouteRouteWithChildren
-  '/ai-lol': typeof AiLolRoute
   '/connections': typeof ConnectionsRoute
   '/device': typeof DeviceRoute
   '/settings': typeof SettingsRoute
@@ -71,7 +64,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/ai-lol': typeof AiLolRoute
   '/connections': typeof ConnectionsRoute
   '/device': typeof DeviceRoute
   '/settings': typeof SettingsRoute
@@ -82,7 +74,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/ai': typeof AiRouteRouteWithChildren
-  '/ai-lol': typeof AiLolRoute
   '/connections': typeof ConnectionsRoute
   '/device': typeof DeviceRoute
   '/settings': typeof SettingsRoute
@@ -94,26 +85,17 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/ai'
-    | '/ai-lol'
     | '/connections'
     | '/device'
     | '/settings'
     | '/ai/live'
     | '/ai/'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/ai-lol'
-    | '/connections'
-    | '/device'
-    | '/settings'
-    | '/ai/live'
-    | '/ai'
+  to: '/' | '/connections' | '/device' | '/settings' | '/ai/live' | '/ai'
   id:
     | '__root__'
     | '/'
     | '/ai'
-    | '/ai-lol'
     | '/connections'
     | '/device'
     | '/settings'
@@ -124,7 +106,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AiRouteRoute: typeof AiRouteRouteWithChildren
-  AiLolRoute: typeof AiLolRoute
   ConnectionsRoute: typeof ConnectionsRoute
   DeviceRoute: typeof DeviceRoute
   SettingsRoute: typeof SettingsRoute
@@ -151,13 +132,6 @@ declare module '@tanstack/react-router' {
       path: '/connections'
       fullPath: '/connections'
       preLoaderRoute: typeof ConnectionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ai-lol': {
-      id: '/ai-lol'
-      path: '/ai-lol'
-      fullPath: '/ai-lol'
-      preLoaderRoute: typeof AiLolRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ai': {
@@ -207,7 +181,6 @@ const AiRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AiRouteRoute: AiRouteRouteWithChildren,
-  AiLolRoute: AiLolRoute,
   ConnectionsRoute: ConnectionsRoute,
   DeviceRoute: DeviceRoute,
   SettingsRoute: SettingsRoute,
