@@ -177,6 +177,9 @@
   .tabs__panel {
     @apply px-0 !py-[0rem];
   }
+  .tabs__tab[aria-selected="true"] {
+    @apply text-foreground;
+  }
 
   .skeleton {
     background: color-mix(in srgb, var(--surface), transparent 80%) !important;

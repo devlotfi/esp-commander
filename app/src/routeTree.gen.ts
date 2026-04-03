@@ -12,8 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as DeviceRouteImport } from './routes/device'
 import { Route as ConnectionsRouteImport } from './routes/connections'
-import { Route as AiRouteImport } from './routes/ai'
+import { Route as AiLolRouteImport } from './routes/ai-lol'
+import { Route as AiRouteRouteImport } from './routes/ai/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AiIndexRouteImport } from './routes/ai/index'
+import { Route as AiLiveRouteImport } from './routes/ai/live'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -30,7 +33,12 @@ const ConnectionsRoute = ConnectionsRouteImport.update({
   path: '/connections',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AiRoute = AiRouteImport.update({
+const AiLolRoute = AiLolRouteImport.update({
+  id: '/ai-lol',
+  path: '/ai-lol',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiRouteRoute = AiRouteRouteImport.update({
   id: '/ai',
   path: '/ai',
   getParentRoute: () => rootRouteImport,
@@ -40,40 +48,83 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AiIndexRoute = AiIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AiRouteRoute,
+} as any)
+const AiLiveRoute = AiLiveRouteImport.update({
+  id: '/live',
+  path: '/live',
+  getParentRoute: () => AiRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/ai': typeof AiRoute
+  '/ai': typeof AiRouteRouteWithChildren
+  '/ai-lol': typeof AiLolRoute
   '/connections': typeof ConnectionsRoute
   '/device': typeof DeviceRoute
   '/settings': typeof SettingsRoute
+  '/ai/live': typeof AiLiveRoute
+  '/ai/': typeof AiIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/ai': typeof AiRoute
+  '/ai-lol': typeof AiLolRoute
   '/connections': typeof ConnectionsRoute
   '/device': typeof DeviceRoute
   '/settings': typeof SettingsRoute
+  '/ai/live': typeof AiLiveRoute
+  '/ai': typeof AiIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/ai': typeof AiRoute
+  '/ai': typeof AiRouteRouteWithChildren
+  '/ai-lol': typeof AiLolRoute
   '/connections': typeof ConnectionsRoute
   '/device': typeof DeviceRoute
   '/settings': typeof SettingsRoute
+  '/ai/live': typeof AiLiveRoute
+  '/ai/': typeof AiIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/ai' | '/connections' | '/device' | '/settings'
+  fullPaths:
+    | '/'
+    | '/ai'
+    | '/ai-lol'
+    | '/connections'
+    | '/device'
+    | '/settings'
+    | '/ai/live'
+    | '/ai/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/ai' | '/connections' | '/device' | '/settings'
-  id: '__root__' | '/' | '/ai' | '/connections' | '/device' | '/settings'
+  to:
+    | '/'
+    | '/ai-lol'
+    | '/connections'
+    | '/device'
+    | '/settings'
+    | '/ai/live'
+    | '/ai'
+  id:
+    | '__root__'
+    | '/'
+    | '/ai'
+    | '/ai-lol'
+    | '/connections'
+    | '/device'
+    | '/settings'
+    | '/ai/live'
+    | '/ai/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AiRoute: typeof AiRoute
+  AiRouteRoute: typeof AiRouteRouteWithChildren
+  AiLolRoute: typeof AiLolRoute
   ConnectionsRoute: typeof ConnectionsRoute
   DeviceRoute: typeof DeviceRoute
   SettingsRoute: typeof SettingsRoute
@@ -102,11 +153,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConnectionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ai-lol': {
+      id: '/ai-lol'
+      path: '/ai-lol'
+      fullPath: '/ai-lol'
+      preLoaderRoute: typeof AiLolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/ai': {
       id: '/ai'
       path: '/ai'
       fullPath: '/ai'
-      preLoaderRoute: typeof AiRouteImport
+      preLoaderRoute: typeof AiRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -116,12 +174,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ai/': {
+      id: '/ai/'
+      path: '/'
+      fullPath: '/ai/'
+      preLoaderRoute: typeof AiIndexRouteImport
+      parentRoute: typeof AiRouteRoute
+    }
+    '/ai/live': {
+      id: '/ai/live'
+      path: '/live'
+      fullPath: '/ai/live'
+      preLoaderRoute: typeof AiLiveRouteImport
+      parentRoute: typeof AiRouteRoute
+    }
   }
 }
 
+interface AiRouteRouteChildren {
+  AiLiveRoute: typeof AiLiveRoute
+  AiIndexRoute: typeof AiIndexRoute
+}
+
+const AiRouteRouteChildren: AiRouteRouteChildren = {
+  AiLiveRoute: AiLiveRoute,
+  AiIndexRoute: AiIndexRoute,
+}
+
+const AiRouteRouteWithChildren =
+  AiRouteRoute._addFileChildren(AiRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AiRoute: AiRoute,
+  AiRouteRoute: AiRouteRouteWithChildren,
+  AiLolRoute: AiLolRoute,
   ConnectionsRoute: ConnectionsRoute,
   DeviceRoute: DeviceRoute,
   SettingsRoute: SettingsRoute,

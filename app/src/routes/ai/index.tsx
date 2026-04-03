@@ -1,43 +1,34 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { useContext, useEffect, useRef, useState } from "react";
-import { MqttContext } from "../../context/mqtt-context";
-import {
-  ResponseStatus,
-  type IOTCAction,
-  type IOTCQuery,
-} from "../../types/handler-call";
-import { useDiscoverDevices } from "../../hooks/use-dsicover-devices";
-import { useMutation, useQueries } from "@tanstack/react-query";
-import { mqttQuery } from "../../utils/mqtt-query";
-import { deviceSchemasToGeminiFunctions } from "../../utils/gemini-schema";
+import { useMutation } from "@tanstack/react-query";
 import {
   Avatar,
   Button,
   Card,
-  ListBox,
   ScrollShadow,
-  Select,
   Spinner,
   toast,
 } from "@heroui/react";
 import { type Content, type Part } from "@google/genai";
 import { GeminiContext } from "../../context/gemini-content";
-import SectionHeader from "../../components/section-header";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import ValidatedTextField from "../../components/validated-text-field";
-import { BrainCircuit, InfoIcon, Mic, Send, Trash } from "lucide-react";
+import { BrainCircuit, InfoIcon, Send, Trash } from "lucide-react";
 import AISVG from "../../components/svg/AISVG";
-import type { DeviceSchema } from "../../types/device";
-import UserMessage from "./user-message";
-import ModelMessage from "./model-message";
 import type { ModelResponseData } from "../../types/model-response-data";
+import ModelMessage from "../../components/ai/model-message";
+import UserMessage from "../../components/ai/user-message";
+import { SchemaContext } from "../../context/schema-context";
 
-export default function AIDasboard() {
+export const Route = createFileRoute("/ai/")({
+  component: RouteComponent,
+});
+
+function RouteComponent() {
   const { t } = useTranslation();
-  const { devices } = useDiscoverDevices();
-  const { connectionData } = useContext(MqttContext);
+  const { devices, functions, lookup } = useContext(SchemaContext);
   const { ai } = useContext(GeminiContext);
-  if (!connectionData) throw new Error("No connection");
   if (!ai) throw new Error("No ai client");
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -51,49 +42,6 @@ export default function AIDasboard() {
       behavior: "smooth",
     });
   }, [contents]);
-
-  /* const { data } = useQuery({
-    refetchOnWindowFocus: false,
-    queryKey: ["GEMINI_MODELS"],
-    queryFn: async () => {
-      const models = await ai.models.list();
-      console.log(JSON.stringify(models));
-    },
-  }); */
-
-  const deviceSchemaQueries = useQueries({
-    queries: devices.map((device) => ({
-      queryKey: ["SCHEMA", device.id],
-      queryFn: async () => {
-        const res = await mqttQuery<{
-          queries: IOTCQuery[];
-          actions: IOTCAction[];
-        }>({
-          client: connectionData.client,
-          requestTopic: device.requestTopic,
-          responseTopic: device.responseTopic,
-          query: "__SCHEMA__",
-        });
-        console.log("res", res);
-
-        if (res.status === ResponseStatus.ERROR) throw new Error(res.code);
-
-        return {
-          id: device.id,
-          name: device.name,
-          requestTopic: device.requestTopic,
-          responseTopic: device.responseTopic,
-          ...res.results,
-        } as DeviceSchema;
-      },
-    })),
-  });
-
-  const { functions, lookup } = deviceSchemasToGeminiFunctions(
-    deviceSchemaQueries
-      .map((query) => query.data)
-      .filter((item) => item !== undefined),
-  );
 
   const promptMutation = useMutation({
     mutationFn: async ({ prompt }: { prompt: string }) => {
@@ -219,46 +167,6 @@ export default function AIDasboard() {
 
   return (
     <div className="flex flex-col flex-1 items-center">
-      <div className="flex items-center justify-between p-[1rem] w-full max-w-screen-md">
-        <SectionHeader
-          icon="brain-circuit"
-          className="hidden sm:flex py-0"
-          iconWrapperProps={{
-            style: {
-              boxShadow: "",
-            },
-          }}
-        >
-          {t("aiChat")}
-        </SectionHeader>
-
-        <div className="flex flex-1 justify-between sm:flex-none sm:justify-normal items-center gap-[0.5rem]">
-          <Select aria-label="model" placeholder="Select one">
-            <Select.Trigger>
-              <Select.Value />
-              <Select.Indicator />
-            </Select.Trigger>
-            <Select.Popover>
-              <ListBox>
-                <ListBox.Item id="test" textValue="Test">
-                  Test
-                  <ListBox.ItemIndicator />
-                </ListBox.Item>
-              </ListBox>
-            </Select.Popover>
-          </Select>
-
-          <Button
-            isIconOnly
-            variant="outline"
-            size="lg"
-            className="bg-[color-mix(in_srgb,var(--surface),transparent_70%)] text-danger"
-            onPress={() => setContents([])}
-          >
-            <Trash></Trash>
-          </Button>
-        </div>
-      </div>
       <ScrollShadow
         ref={scrollRef}
         className="flex flex-col flex-1 w-full items-center px-[1rem]"
@@ -323,8 +231,12 @@ export default function AIDasboard() {
               isIconOnly
               variant="outline"
               className="bg-[color-mix(in_srgb,var(--surface),transparent_70%)] rounded-2xl text-foreground"
+              onPress={() => {
+                contentsRef.current = [];
+                setContents([]);
+              }}
             >
-              <Mic className="size-[1.3rem]"></Mic>
+              <Trash className="size-[1.3rem] text-danger"></Trash>
             </Button>
           }
           suffix={

@@ -25,7 +25,7 @@ function RootComponent() {
           <Navbar></Navbar>
           <ScrollShadow
             ref={scrollRef}
-            className="flex h-[calc(100dvh-4rem-5.5rem)] md:h-[calc(100dvh-6rem)] min-w-0 overflow-x-hidden overflow-y-auto"
+            className="flex flex-col h-[calc(100dvh-4rem-5.5rem)] md:h-[calc(100dvh-6rem)] min-w-0 overflow-x-hidden overflow-y-auto"
             style={{
               scrollbarColor:
                 "color-mix(in srgb, var(--accent), transparent 30%) color-mix(in srgb, var(--surface), transparent 80%)",
