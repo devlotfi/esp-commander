@@ -10,6 +10,7 @@ import { BrainCircuit, Check, CircleX } from "lucide-react";
 import type { Device } from "../../types/device";
 import { mqttAction } from "../../utils/mqtt-action";
 import type { ModelResponseData } from "../../types/model-response-data";
+import { sleep } from "../../utils/sleep";
 
 export default function ModelMessage({
   content,
@@ -30,7 +31,7 @@ export default function ModelMessage({
       ?.filter((part) => part.functionCall !== undefined)
       .map((part) => part.functionCall!) || [];
   const functionCallsQueries = useQueries({
-    queries: functionCalls.map((functionCall) => ({
+    queries: functionCalls.map((functionCall, index) => ({
       refetchOnReconnect: false,
       refetchOnWindowFocus: false,
       queryKey: ["FUNCTION_CALL", functionCall.id],
@@ -42,6 +43,8 @@ export default function ModelMessage({
           (device) => device.id === originalFunction.deviceId,
         );
         if (!device) return null;
+
+        await sleep(index * 300);
         console.log("function call", functionCall);
         console.log("function original", lookup.get(functionCall.name));
 

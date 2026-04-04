@@ -164,6 +164,7 @@ export default function AddConnectionModal({ state }: AddConnectionModalProps) {
                 className="mt-[1rem]"
               >
                 {t("add")}
+                <Plus></Plus>
               </Button>
             </Form>
           </Modal.Body>

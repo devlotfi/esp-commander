@@ -59,6 +59,7 @@ export default function DeleteConnectionModal({
               onPress={() => mutate()}
             >
               {t("delete")}
+              <Trash></Trash>
             </Button>
           </Modal.Footer>
         </Modal.Dialog>

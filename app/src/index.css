@@ -336,7 +336,7 @@
       transparent
     ),
     radial-gradient(
-      color-mix(in srgb, var(--surface), transparent 80%) 2px,
+      color-mix(in srgb, var(--surface), transparent 75%) 2px,
       transparent 2px
     );
 

@@ -173,6 +173,7 @@ export default function EditConnectionModal({
                 className="mt-[1rem]"
               >
                 {t("edit")}
+                <Pen></Pen>
               </Button>
             </Form>
           </Modal.Body>

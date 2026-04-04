@@ -62,7 +62,13 @@ export default function BottomTabs() {
   const { t } = useTranslation();
 
   return (
-    <div className="flex md:hidden h-[5.5rem] rounded-tl-4xl rounded-tr-4xl md:rounded-none md:pl-0 bg-[color-mix(in_srgb,var(--surface),transparent_85%)] border-t">
+    <div
+      className="flex md:hidden h-[5.5rem] rounded-tl-4xl rounded-tr-4xl md:rounded-none md:pl-0 bg-[color-mix(in_srgb,var(--surface),transparent_85%)] border-t"
+      style={{
+        boxShadow:
+          "color-mix(in srgb, var(--surface), transparent 80%) 0px 3px 0px inset",
+      }}
+    >
       <div className="flex items-center w-full gap-[0.5rem] p-[0.3rem]">
         <BottomTabsButton path="/" icon={"cpu"}>
           {t("devices")}

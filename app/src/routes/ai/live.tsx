@@ -91,7 +91,7 @@ function AudioOrb({ signal, playerRef, status }: OrbProps) {
   const orbOpacity = useTransform(
     springLevel,
     [0, 0.05, 1],
-    [isIdle ? 0.45 : 0.7, 1, 1],
+    [isIdle ? 0.6 : 0.7, 1, 1],
   );
   const glowSize = useTransform(springLevel, [0, 1], [0, 32]);
 
@@ -110,17 +110,11 @@ function AudioOrb({ signal, playerRef, status }: OrbProps) {
 
   // Ring 1: border ring that expands outward
   const ring1Scale = useTransform(ring1Level, [0, 1], [1, 1.55]);
-  const ring1Opacity = useTransform(ring1Level, [0, 0.1, 1], [0, 0.4, 0.0]);
+  const ring1Opacity = useTransform(ring1Level, [0, 0.1, 1], [0, 0.8, 0.0]);
 
   // Ring 2: soft diffuse glow ring, lags even more
   const ring2Scale = useTransform(ring2Level, [0, 1], [1, 1.9]);
-  const ring2Opacity = useTransform(ring2Level, [0, 0.1, 1], [0, 0.2, 0.0]);
-
-  // Hue rotation: 0deg = user (accent color), 30deg = AI (warm shift)
-  const hueRotate = useTransform(speakerSpring, [0, 1], [0, 30]);
-  const hueFilter = useTransform(hueRotate, (h) =>
-    h < 0.5 ? "none" : `hue-rotate(${h}deg)`,
-  );
+  const ring2Opacity = useTransform(ring2Level, [0, 0.1, 1], [0, 0.5, 0.0]);
 
   // ── rAF loop: measure audio, feed springs ────────────────────────────────
   useEffect(() => {
@@ -226,8 +220,6 @@ function AudioOrb({ signal, playerRef, status }: OrbProps) {
           borderRadius,
           filter: isIdle ? "none" : filter,
           opacity: orbOpacity,
-          // hue shift to distinguish AI vs user speaker
-          ...(isIdle ? {} : { filter: hueFilter }),
           willChange: "transform, border-radius, filter, opacity",
           // connecting: gentle CSS pulse, live: framer takes over
           animation: isConnecting

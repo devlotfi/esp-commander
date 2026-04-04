@@ -1,7 +1,15 @@
 import { Alert, Button, Card, Separator, Skeleton, toast } from "@heroui/react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Check, Eye, EyeOff, InfoIcon } from "lucide-react";
+import {
+  Bell,
+  BellOff,
+  BellRing,
+  Check,
+  Eye,
+  EyeOff,
+  InfoIcon,
+} from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import ValidatedTextField from "../../components/validated-text-field";
 import { useFormik } from "formik";
@@ -197,6 +205,7 @@ export default function NotificationsSettings() {
               }
             >
               {t("test")}
+              <BellRing></BellRing>
             </Button>
           </>
         ) : (
@@ -265,6 +274,7 @@ export default function NotificationsSettings() {
               onPress={() => unsubscribeMutation.mutate()}
             >
               {t("unsubscribe")}
+              <BellOff></BellOff>
             </Button>
           ) : (
             <Button
@@ -274,6 +284,7 @@ export default function NotificationsSettings() {
               className="mt-[1rem]"
             >
               {t("subscribe")}
+              <Bell></Bell>
             </Button>
           )}
         </form>

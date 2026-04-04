@@ -1,7 +1,7 @@
 import { Button, Card, toast } from "@heroui/react";
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Check, Eye, EyeOff, InfoIcon } from "lucide-react";
+import { Check, Eye, EyeOff, InfoIcon, Save } from "lucide-react";
 import ValidatedTextField from "../../components/validated-text-field";
 import { useFormik } from "formik";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -97,6 +97,7 @@ export default function GeminiSettings() {
             className="mt-[1rem]"
           >
             {t("save")}
+            <Save></Save>
           </Button>
         </form>
       </Card.Content>
