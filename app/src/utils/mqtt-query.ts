@@ -12,73 +12,93 @@ export function mqttQuery<T = HandlerData>({
   responseTopic,
   query,
   timeoutMs = 5000,
+  signal,
 }: {
   client: MqttClient;
   requestTopic: string;
   responseTopic: string;
   query: string;
   timeoutMs?: number;
+  signal?: AbortSignal;
 }): Promise<HandlerResponse<T>> {
   return new Promise((resolve, reject) => {
     const requestId = uuid();
-    let finished = false;
+    let settled = false;
 
-    const cleanup = () => {
-      if (finished) return;
-      finished = true;
+    const finish = (fn: () => void) => {
+      if (settled) return;
+      settled = true;
 
       clearTimeout(timeout);
-      client.removeListener("message", handler);
-      client.unsubscribe(responseTopic);
+      client.off("message", handler);
+
+      if (signal) {
+        signal.removeEventListener("abort", onAbort);
+      }
+
+      fn();
     };
 
-    const handler = (_topic: string, message: Buffer) => {
+    const onAbort = () => {
+      finish(() => reject(new DOMException("Aborted", "AbortError")));
+    };
+
+    const handler = (topic: string, message: Buffer) => {
+      // Ignore messages from other topics
+      if (topic !== responseTopic) return;
+
+      let payload: HandlerResponse<T>;
+
+      // Ignore malformed/unrelated payloads
       try {
-        const payload = JSON.parse(message.toString());
+        payload = JSON.parse(message.toString());
+      } catch {
+        return;
+      }
 
-        if (payload.requestId !== requestId) return;
+      // Ignore responses for other requests
+      if (payload.requestId !== requestId) return;
 
-        cleanup();
-
-        if (payload.status === "ERROR") {
-          reject(payload);
-        } else {
-          resolve(payload);
-        }
-      } catch (err) {
-        cleanup();
-        reject(err);
+      if (payload.status === "ERROR") {
+        finish(() => reject(payload));
+      } else {
+        finish(() => resolve(payload));
       }
     };
 
     const timeout = setTimeout(() => {
-      cleanup();
-      reject(new Error(`MQTT request timeout (${timeoutMs}ms)`));
+      finish(() => reject(new Error(`MQTT request timeout (${timeoutMs}ms)`)));
     }, timeoutMs);
+
+    // Handle already-aborted signals
+    if (signal?.aborted) {
+      onAbort();
+      return;
+    }
+
+    signal?.addEventListener("abort", onAbort);
 
     client.on("message", handler);
 
-    // Wait for subscribe to succeed before publishing
-    client.subscribe(
-      responseTopic,
-      {
-        qos: 1,
-      },
-      (err: Error | null) => {
-        if (err) {
-          cleanup();
-          reject(err);
-          return;
-        }
+    client.subscribe(responseTopic, { qos: 1 }, (subErr: Error | null) => {
+      if (subErr) {
+        finish(() => reject(subErr));
+        return;
+      }
 
-        client.publish(
-          requestTopic,
-          JSON.stringify({
-            requestId,
-            query,
-          } as QueryRequest),
-        );
-      },
-    );
+      client.publish(
+        requestTopic,
+        JSON.stringify({
+          requestId,
+          query,
+        } as QueryRequest),
+        { qos: 1 },
+        (pubErr?: Error) => {
+          if (pubErr) {
+            finish(() => reject(pubErr));
+          }
+        },
+      );
+    });
   });
 }

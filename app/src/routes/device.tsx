@@ -40,7 +40,7 @@ function DeviceSchema() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["SCHEMA", device.id],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const res = await mqttQuery<{
         queries: IOTCQuery[];
         actions: IOTCAction[];
@@ -49,6 +49,7 @@ function DeviceSchema() {
         requestTopic: device.requestTopic,
         responseTopic: device.responseTopic,
         query: "__SCHEMA__",
+        signal,
       });
       console.log("res", res);
 

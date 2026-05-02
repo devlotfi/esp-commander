@@ -24,7 +24,7 @@ export default function QueryComponent({ query, delay }: QueryComponentProps) {
 
   const { data, isLoading, refetch, isRefetching } = useQuery({
     queryKey: ["QUERY", query.name],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       console.log("fetch");
       await sleep(delay);
       const res = await mqttQuery({
@@ -32,6 +32,7 @@ export default function QueryComponent({ query, delay }: QueryComponentProps) {
         requestTopic: device.requestTopic,
         responseTopic: device.responseTopic,
         query: query.name,
+        signal,
       });
 
       if (res.status === ResponseStatus.ERROR) throw new Error(res.code);

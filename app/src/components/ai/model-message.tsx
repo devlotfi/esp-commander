@@ -35,7 +35,7 @@ export default function ModelMessage({
       refetchOnReconnect: false,
       refetchOnWindowFocus: false,
       queryKey: ["FUNCTION_CALL", functionCall.id],
-      queryFn: async (): Promise<ModelResponseData | null> => {
+      queryFn: async ({ signal }): Promise<ModelResponseData | null> => {
         if (!functionCall.name) return null;
         const originalFunction = lookup.get(functionCall.name);
         if (!originalFunction) return null;
@@ -55,6 +55,7 @@ export default function ModelMessage({
             requestTopic: device.requestTopic,
             responseTopic: device.responseTopic,
             query: originalFunction.originalName,
+            signal,
           });
           if (res.status === ResponseStatus.ERROR) throw new Error(res.code);
           if (Object.keys(res.results).length > 0) {
@@ -78,6 +79,7 @@ export default function ModelMessage({
             responseTopic: device.responseTopic,
             action: originalFunction.originalName,
             parameters: functionCall.args as HandlerData,
+            signal,
           });
           if (res.status === ResponseStatus.ERROR) throw new Error(res.code);
           if (Object.keys(res.results).length > 0) {

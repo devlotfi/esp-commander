@@ -260,7 +260,7 @@ function RouteComponent() {
   // Shared audio signal — written by audio callbacks, read by orb rAF
   const orbSignal = useRef<OrbSignal>({ micLevel: 0, aiLevel: 0 });
 
-  // Smoothing: exponential moving average toward new value
+  const abortControllerRef = useRef<AbortController | null>(null);
   const { mutateAsync } = useMutation({
     retry: 5,
     mutationFn: async (
@@ -272,12 +272,17 @@ function RouteComponent() {
       const device = devices.find((d) => d.id === originalFunction.deviceId);
       if (!device) return null;
 
+      abortControllerRef.current?.abort();
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
       if (originalFunction.type === "query") {
         const res = await mqttQuery({
           client: connectionData.client,
           requestTopic: device.requestTopic,
           responseTopic: device.responseTopic,
           query: originalFunction.originalName,
+          signal: controller.signal,
         });
         if (res.status === ResponseStatus.ERROR) throw new Error(res.code);
         return {
@@ -295,6 +300,7 @@ function RouteComponent() {
           responseTopic: device.responseTopic,
           action: originalFunction.originalName,
           parameters: functionCall.args as HandlerData,
+          signal: controller.signal,
         });
         if (res.status === ResponseStatus.ERROR) throw new Error(res.code);
         return {

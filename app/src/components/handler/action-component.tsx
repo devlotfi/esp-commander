@@ -5,7 +5,7 @@ import {
   type HandlerData,
   type IOTCAction,
 } from "../../types/handler-call";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { MqttContext } from "../../context/mqtt-context";
 import { useRouteContext } from "@tanstack/react-router";
 import ValueRow from "./value-row";
@@ -34,14 +34,21 @@ export default function ActionComponent({ action }: ActionComponentProps) {
   const state = useOverlayState();
   const [results, setResults] = useState<HandlerData>({});
   if (!connectionData || !device) throw new Error("Missing data");
+
+  const abortControllerRef = useRef<AbortController | null>(null);
   const { mutate, isPending } = useMutation({
     mutationFn: async (parameters: HandlerData) => {
+      abortControllerRef.current?.abort();
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
       const res = await mqttAction({
         client: connectionData.client,
         requestTopic: device.requestTopic,
         responseTopic: device.responseTopic,
         action: action.name,
         parameters,
+        signal: controller.signal,
       });
 
       if (res.status === ResponseStatus.ERROR) throw new Error(res.code);

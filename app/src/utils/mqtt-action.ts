@@ -1,10 +1,6 @@
 import { v4 as uuid } from "uuid";
-import {
-  type HandlerData,
-  type ActionRequest,
-  type HandlerResponse,
-} from "../types/handler-call";
 import type { MqttClient } from "mqtt";
+import type { HandlerData, HandlerResponse } from "../types/handler-call";
 
 export function mqttAction<T = HandlerData>({
   client,
@@ -13,75 +9,91 @@ export function mqttAction<T = HandlerData>({
   action,
   parameters,
   timeoutMs = 10000,
+  signal,
 }: {
   client: MqttClient;
   requestTopic: string;
   responseTopic: string;
   action: string;
-  parameters: HandlerData;
+  parameters: Record<string, unknown>;
   timeoutMs?: number;
+  signal?: AbortSignal;
 }): Promise<HandlerResponse<T>> {
   return new Promise((resolve, reject) => {
     const requestId = uuid();
-    let finished = false;
+    let settled = false;
 
-    const cleanup = () => {
-      if (finished) return;
-      finished = true;
+    const finish = (fn: () => void) => {
+      if (settled) return;
+      settled = true;
 
       clearTimeout(timeout);
-      client.removeListener("message", handler);
-      client.unsubscribe(responseTopic);
+      client.off("message", handler);
+
+      if (signal) {
+        signal.removeEventListener("abort", onAbort);
+      }
+
+      fn();
     };
 
-    const handler = (_topic: string, message: Buffer) => {
+    const onAbort = () => {
+      finish(() => reject(new DOMException("Aborted", "AbortError")));
+    };
+
+    const handler = (topic: string, message: Buffer) => {
+      if (topic !== responseTopic) return;
+
+      let payload;
+
       try {
-        const payload = JSON.parse(message.toString());
+        payload = JSON.parse(message.toString());
+      } catch {
+        return;
+      }
 
-        if (payload.requestId !== requestId) return;
+      if (payload.requestId !== requestId) return;
 
-        cleanup();
-
-        if (payload.status === "ERROR") {
-          reject(payload);
-        } else {
-          resolve(payload);
-        }
-      } catch (err) {
-        cleanup();
-        reject(err);
+      if (payload.status === "ERROR") {
+        finish(() => reject(payload));
+      } else {
+        finish(() => resolve(payload));
       }
     };
 
     const timeout = setTimeout(() => {
-      cleanup();
-      reject(new Error(`MQTT request timeout (${timeoutMs}ms)`));
+      finish(() => reject(new Error(`Timeout after ${timeoutMs}ms`)));
     }, timeoutMs);
+
+    if (signal?.aborted) {
+      onAbort();
+      return;
+    }
+
+    signal?.addEventListener("abort", onAbort);
 
     client.on("message", handler);
 
-    // Wait for subscribe to succeed before publishing
-    client.subscribe(
-      responseTopic,
-      {
-        qos: 1,
-      },
-      (err: Error | null) => {
-        if (err) {
-          cleanup();
-          reject(err);
-          return;
-        }
+    client.subscribe(responseTopic, { qos: 1 }, (subErr) => {
+      if (subErr) {
+        finish(() => reject(subErr));
+        return;
+      }
 
-        client.publish(
-          requestTopic,
-          JSON.stringify({
-            requestId,
-            action,
-            parameters,
-          } as ActionRequest),
-        );
-      },
-    );
+      client.publish(
+        requestTopic,
+        JSON.stringify({
+          requestId,
+          action,
+          parameters,
+        }),
+        { qos: 1 },
+        (pubErr) => {
+          if (pubErr) {
+            finish(() => reject(pubErr));
+          }
+        },
+      );
+    });
   });
 }

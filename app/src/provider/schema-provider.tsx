@@ -19,7 +19,7 @@ export default function SchemaProvider({ children }: PropsWithChildren) {
   const deviceSchemaQueries = useQueries({
     queries: devices.map((device) => ({
       queryKey: ["SCHEMA", device.id],
-      queryFn: async () => {
+      queryFn: async ({ signal }) => {
         const res = await mqttQuery<{
           queries: IOTCQuery[];
           actions: IOTCAction[];
@@ -28,6 +28,7 @@ export default function SchemaProvider({ children }: PropsWithChildren) {
           requestTopic: device.requestTopic,
           responseTopic: device.responseTopic,
           query: "__SCHEMA__",
+          signal,
         });
         console.log("res", res);
 
