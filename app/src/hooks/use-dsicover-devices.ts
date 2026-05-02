@@ -11,7 +11,12 @@ export function useDiscoverDevices() {
   const [devices, setDevices] = useState<Device[]>([]);
 
   useEffect(() => {
-    connectionData.client.subscribe(connectionData.info.responseDiscoveryTopic);
+    connectionData.client.subscribe(
+      connectionData.info.responseDiscoveryTopic,
+      {
+        qos: 1,
+      },
+    );
 
     const handleMessage = (_: string, message: Buffer) => {
       try {

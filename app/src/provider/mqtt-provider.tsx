@@ -98,12 +98,6 @@ export default function MqttProvider({ children }: PropsWithChildren) {
           isConnected: true,
         };
       });
-
-      /* if (connectionData) {
-        connectionData.client.subscribe(connectionData.responseTopic, (err) => {
-          if (!err) console.log("Subscribed to ", connectionData.responseTopic);
-        });
-      } */
     };
     const handleReconnect = () => {
       console.log("mqtt-context: reconnect");

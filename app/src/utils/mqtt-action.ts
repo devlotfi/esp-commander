@@ -61,21 +61,27 @@ export function mqttAction<T = HandlerData>({
     client.on("message", handler);
 
     // Wait for subscribe to succeed before publishing
-    client.subscribe(responseTopic, (err: Error | null) => {
-      if (err) {
-        cleanup();
-        reject(err);
-        return;
-      }
+    client.subscribe(
+      responseTopic,
+      {
+        qos: 1,
+      },
+      (err: Error | null) => {
+        if (err) {
+          cleanup();
+          reject(err);
+          return;
+        }
 
-      client.publish(
-        requestTopic,
-        JSON.stringify({
-          requestId,
-          action,
-          parameters,
-        } as ActionRequest),
-      );
-    });
+        client.publish(
+          requestTopic,
+          JSON.stringify({
+            requestId,
+            action,
+            parameters,
+          } as ActionRequest),
+        );
+      },
+    );
   });
 }
