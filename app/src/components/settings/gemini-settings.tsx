@@ -61,7 +61,7 @@ export default function GeminiSettings() {
   const toggleVisibility = () => setIsVisible(!isVisible);
 
   return (
-    <Card className="mt-[2rem]">
+    <Card>
       <Card.Content className="flex flex-col gap-[0.7rem]">
         <SectionTitle icon="brain-circuit">Gemini</SectionTitle>
         <form

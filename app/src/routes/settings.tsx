@@ -14,12 +14,18 @@ function RouteComponent() {
 
   return (
     <div className="flex flex-1 flex-col items-center p-[1rem]">
-      <div className="flex flex-col w-full max-w-screen-sm pb-[5rem]">
+      <div className="flex flex-col w-full max-w-screen-lg pb-[5rem]">
         <SectionHeader icon="settings">{t("settings")}</SectionHeader>
 
-        <DisplaySettings></DisplaySettings>
-        <GeminiSettings></GeminiSettings>
-        <NotificationsSettings></NotificationsSettings>
+        <div className="flex flex-col lg:flex-row gap-[1rem]">
+          <div className="flex flex-1 flex-col gap-[1rem]">
+            <DisplaySettings></DisplaySettings>
+            <GeminiSettings></GeminiSettings>
+          </div>
+          <div className="flex flex-1 flex-col gap-[1rem]">
+            <NotificationsSettings></NotificationsSettings>
+          </div>
+        </div>
       </div>
     </div>
   );

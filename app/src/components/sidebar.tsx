@@ -194,10 +194,13 @@ export default function Sidebar() {
         </div>
 
         <div className="flex flex-col flex-1 justify-center items-center gap-[0.5rem] p-[0.7rem]">
-          <SidebarButton path="/" icon={"cpu"}>
+          <SidebarButton path="/" icon={"microchip"}>
             {t("devices")}
           </SidebarButton>
-          <SidebarButton path="/connections" icon={"satellite-dish"}>
+          <SidebarButton
+            path="/connections"
+            icon={"chevrons-left-right-ellipsis"}
+          >
             {t("connections")}
           </SidebarButton>
           <SidebarButton path="/ai" icon={"brain-circuit"}>

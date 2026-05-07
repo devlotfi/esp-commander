@@ -35,12 +35,18 @@ function RouteComponent() {
       <AddConnectionModal state={addConnectionModalState}></AddConnectionModal>
 
       <div className="flex flex-1 flex-col items-center">
-        <div className="flex flex-1 flex-col max-w-screen-md w-full">
+        <div className="flex flex-1 flex-col max-w-screen-lg w-full">
           <div className="flex justify-between items-center z-10 py-[1rem] px-[1rem]">
             <SectionHeader icon="satellite-dish">
               {t("connections")}
             </SectionHeader>
-
+            <div
+              className="hidden md:flex flex-1 h-[1px]"
+              style={{
+                backgroundImage:
+                  "linear-gradient(to right, transparent, var(--separator), transparent)",
+              }}
+            ></div>
             <Button
               isIconOnly
               variant="outline"

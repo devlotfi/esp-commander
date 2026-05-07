@@ -64,16 +64,11 @@ export default function ConnectionComponent({ connection }: ConnectionProps) {
         ) : null}
 
         <div className="flex flex-col pr-[1.5rem] gap-[1rem]">
-          <div className="flex flex-col flex-1">
+          <div className="flex flex-col flex-1 gap-[0.5rem]">
             <div className="flex font-bold text-[15pt] break-all">
               {connection.name}
             </div>
             <DataRow name="URL" value={connection.url}></DataRow>
-            <DataRow name="Topic" value={connection.discoveryTopic}></DataRow>
-            <DataRow
-              name="Response topic"
-              value={connection.responseDiscoveryTopic}
-            ></DataRow>
 
             {connection.username ? (
               <>
@@ -83,6 +78,29 @@ export default function ConnectionComponent({ connection }: ConnectionProps) {
                 <DataRow
                   name={t("username")}
                   value={connection.username}
+                ></DataRow>
+              </>
+            ) : null}
+
+            <div className="flex font-bold text-[12pt]">{t("discovery")}</div>
+            <DataRow
+              name={t("discoveryTopic")}
+              value={connection.discoveryTopic}
+            ></DataRow>
+            <DataRow
+              name={t("responseDiscoveryTopic")}
+              value={connection.responseDiscoveryTopic}
+            ></DataRow>
+            {connection.sleepyDeviceDiscoveryTopic &&
+            connection.sleepyDeviceResponseDiscoveryTopic ? (
+              <>
+                <DataRow
+                  name={t("sleepyDeviceDiscoveryTopic")}
+                  value={connection.sleepyDeviceDiscoveryTopic}
+                ></DataRow>
+                <DataRow
+                  name={t("sleepyDeviceResponseDiscoveryTopic")}
+                  value={connection.sleepyDeviceResponseDiscoveryTopic}
                 ></DataRow>
               </>
             ) : null}
@@ -152,7 +170,7 @@ export default function ConnectionComponent({ connection }: ConnectionProps) {
         </div>
       </Card.Content>
 
-      <div className="flex items-center">
+      <div className="flex mt-[1rem]">
         {connectionData && connectionData.info.id === connection.id ? (
           <Button
             isIconOnly

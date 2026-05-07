@@ -3,21 +3,15 @@ import { useContext } from "react";
 import { MqttContext } from "../context/mqtt-context";
 import { Card, Tabs } from "@heroui/react";
 import DataRow from "../components/data-row";
-import {
-  ResponseStatus,
-  type ESPCommanderAction,
-  type ESPCommanderQuery,
-} from "../types/handler-call";
-import { useQuery } from "@tanstack/react-query";
 import LoadingScreen from "../components/loading-screen";
 import { useTranslation } from "react-i18next";
-import { mqttQuery } from "../utils/mqtt-query";
-import QueryComponent from "../components/handler/query-component";
-import ActionComponent from "../components/handler/action-component";
 import EmptySVG from "../components/svg/EmptySVG";
 import ChipSVG from "../components/svg/ChipSVG";
+import { useSleepyDeviceQuery } from "../hooks/use-sleepy-device-query";
+import SleepyQueryComponent from "../components/handler/sleepy-query-component";
+import SleepyActionComponent from "../components/handler/sleepy-action-component";
 
-export const Route = createFileRoute("/device")({
+export const Route = createFileRoute("/sleepy-device")({
   component: RouteComponent,
 });
 
@@ -35,38 +29,18 @@ function EmptyList() {
 function DeviceSchema() {
   const { t } = useTranslation();
   const { connectionData } = useContext(MqttContext);
-  const { device } = Route.useRouteContext();
-  if (!connectionData || !device) throw new Error("Missing data");
+  const { sleepyDevice } = Route.useRouteContext();
+  if (!connectionData || !sleepyDevice) throw new Error("Missing data");
+  const { sleepyDeviceData, refetch } = useSleepyDeviceQuery(sleepyDevice);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["SCHEMA", device.id],
-    queryFn: async ({ signal }) => {
-      const res = await mqttQuery<{
-        queries: ESPCommanderQuery[];
-        actions: ESPCommanderAction[];
-      }>({
-        client: connectionData.client,
-        requestTopic: device.requestTopic,
-        responseTopic: device.responseTopic,
-        query: "__SCHEMA__",
-        signal,
-      });
-      console.log("res", res);
-
-      if (res.status === ResponseStatus.ERROR) throw new Error(res.code);
-
-      return res.results;
-    },
-  });
-
-  if (isLoading || !data) return <LoadingScreen></LoadingScreen>;
+  if (!sleepyDeviceData) return <LoadingScreen></LoadingScreen>;
 
   return (
     <Tabs className="mt-[3rem]">
       <Tabs.ListContainer>
         <Tabs.List aria-label="Options">
-          <Tabs.Tab id="queries">
-            {t("queries")}
+          <Tabs.Tab id="data">
+            {t("data")}
             <Tabs.Indicator />
           </Tabs.Tab>
           <Tabs.Tab id="actions">
@@ -75,29 +49,22 @@ function DeviceSchema() {
           </Tabs.Tab>
         </Tabs.List>
       </Tabs.ListContainer>
-      <Tabs.Panel className="pt-4" id="queries">
+      <Tabs.Panel className="pt-4" id="data">
         <div className="flex flex-col gap-[1rem]">
-          {data.queries.length ? (
-            data.queries.map((query, index) => (
-              <QueryComponent
-                key={`${query.name}-${index}`}
-                query={query}
-                delay={index * 300}
-              ></QueryComponent>
-            ))
-          ) : (
-            <EmptyList></EmptyList>
-          )}
+          <SleepyQueryComponent
+            data={sleepyDeviceData}
+            refetch={refetch}
+          ></SleepyQueryComponent>
         </div>
       </Tabs.Panel>
       <Tabs.Panel className="pt-4" id="actions">
         <div className="flex flex-col gap-[1rem]">
-          {data.actions.length ? (
-            data.actions.map((action, index) => (
-              <ActionComponent
+          {sleepyDeviceData.actions.length ? (
+            sleepyDeviceData.actions.map((action, index) => (
+              <SleepyActionComponent
                 key={`${action.name}-${index}`}
                 action={action}
-              ></ActionComponent>
+              ></SleepyActionComponent>
             ))
           ) : (
             <EmptyList></EmptyList>
@@ -109,10 +76,11 @@ function DeviceSchema() {
 }
 
 function RouteComponent() {
+  const { t } = useTranslation();
   const { connectionData } = useContext(MqttContext);
-  const { device } = Route.useRouteContext();
+  const { sleepyDevice } = Route.useRouteContext();
 
-  if (!connectionData || !device) return <Navigate to="/"></Navigate>;
+  if (!connectionData || !sleepyDevice) return <Navigate to="/"></Navigate>;
 
   return (
     <div className="flex flex-1 flex-col items-center">
@@ -124,17 +92,20 @@ function RouteComponent() {
           </div>
 
           <div className="flex justify-center font-bold text-[20pt] z-10">
-            {device.name}
+            {sleepyDevice.name}
           </div>
         </div>
 
         <Card>
           <Card.Content>
-            <DataRow name="ID" value={device.id}></DataRow>
-            <DataRow name="Request topic" value={device.requestTopic}></DataRow>
+            <DataRow name="ID" value={sleepyDevice.id}></DataRow>
             <DataRow
-              name="Response topic"
-              value={device.responseTopic}
+              name={t("commandTopic")}
+              value={sleepyDevice.commandTopic}
+            ></DataRow>
+            <DataRow
+              name={t("dataTopic")}
+              value={sleepyDevice.dataTopic}
             ></DataRow>
           </Card.Content>
         </Card>

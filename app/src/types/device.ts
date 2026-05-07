@@ -1,4 +1,4 @@
-import type { IOTCAction, IOTCQuery } from "./handler-call";
+import type { ESPCommanderAction, ESPCommanderQuery } from "./handler-call";
 
 export interface Device {
   id: string;
@@ -21,6 +21,6 @@ export function isDevice(obj: unknown): obj is Device {
 }
 
 export interface DeviceSchema extends Device {
-  queries: IOTCQuery[];
-  actions: IOTCAction[];
+  queries: ESPCommanderQuery[];
+  actions: ESPCommanderAction[];
 }

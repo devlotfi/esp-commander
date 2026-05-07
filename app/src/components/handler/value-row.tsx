@@ -40,7 +40,11 @@ export default function ValueRow({
           </div>
           <div className="flex text-[12pt] opacity-80">{value.name}</div>
         </div>
-        <div className="flex h-[1px] flex-1 bg-separator"></div>
+        <div
+          className={cn(
+            "flex h-[1px] flex-1 bg-[linear-gradient(to_right,var(--separator),transparent)] md:bg-[linear-gradient(to_right,transparent,var(--separator),transparent)]",
+          )}
+        ></div>
       </div>
       {valueData !== undefined ? (
         <div className="flex items-center gap-[0.5rem]">

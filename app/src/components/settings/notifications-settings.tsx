@@ -166,7 +166,7 @@ export default function NotificationsSettings() {
 
   if (isLoading || !data)
     return (
-      <Card className="mt-[2rem]">
+      <Card>
         <Card.Content className="gap-[1rem]">
           <Skeleton className="h-3 w-1/2 rounded-lg" />
           <Skeleton className="h-3 rounded-lg" />
@@ -177,7 +177,7 @@ export default function NotificationsSettings() {
     );
 
   return (
-    <Card className="mt-[2rem]">
+    <Card>
       <Card.Content className="flex flex-col gap-[0.7rem]">
         <SectionTitle icon="bell-ring">{t("notifications")}</SectionTitle>
 

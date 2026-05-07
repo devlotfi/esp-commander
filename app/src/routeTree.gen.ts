@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SleepyDeviceRouteImport } from './routes/sleepy-device'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as DeviceRouteImport } from './routes/device'
 import { Route as ConnectionsRouteImport } from './routes/connections'
@@ -17,6 +18,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AiIndexRouteImport } from './routes/ai/index'
 import { Route as AiLiveRouteImport } from './routes/ai/live'
 
+const SleepyDeviceRoute = SleepyDeviceRouteImport.update({
+  id: '/sleepy-device',
+  path: '/sleepy-device',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/connections': typeof ConnectionsRoute
   '/device': typeof DeviceRoute
   '/settings': typeof SettingsRoute
+  '/sleepy-device': typeof SleepyDeviceRoute
   '/ai/live': typeof AiLiveRoute
   '/ai/': typeof AiIndexRoute
 }
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/connections': typeof ConnectionsRoute
   '/device': typeof DeviceRoute
   '/settings': typeof SettingsRoute
+  '/sleepy-device': typeof SleepyDeviceRoute
   '/ai/live': typeof AiLiveRoute
   '/ai': typeof AiIndexRoute
 }
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/connections': typeof ConnectionsRoute
   '/device': typeof DeviceRoute
   '/settings': typeof SettingsRoute
+  '/sleepy-device': typeof SleepyDeviceRoute
   '/ai/live': typeof AiLiveRoute
   '/ai/': typeof AiIndexRoute
 }
@@ -88,10 +97,18 @@ export interface FileRouteTypes {
     | '/connections'
     | '/device'
     | '/settings'
+    | '/sleepy-device'
     | '/ai/live'
     | '/ai/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/connections' | '/device' | '/settings' | '/ai/live' | '/ai'
+  to:
+    | '/'
+    | '/connections'
+    | '/device'
+    | '/settings'
+    | '/sleepy-device'
+    | '/ai/live'
+    | '/ai'
   id:
     | '__root__'
     | '/'
@@ -99,6 +116,7 @@ export interface FileRouteTypes {
     | '/connections'
     | '/device'
     | '/settings'
+    | '/sleepy-device'
     | '/ai/live'
     | '/ai/'
   fileRoutesById: FileRoutesById
@@ -109,10 +127,18 @@ export interface RootRouteChildren {
   ConnectionsRoute: typeof ConnectionsRoute
   DeviceRoute: typeof DeviceRoute
   SettingsRoute: typeof SettingsRoute
+  SleepyDeviceRoute: typeof SleepyDeviceRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sleepy-device': {
+      id: '/sleepy-device'
+      path: '/sleepy-device'
+      fullPath: '/sleepy-device'
+      preLoaderRoute: typeof SleepyDeviceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings': {
       id: '/settings'
       path: '/settings'
@@ -184,6 +210,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConnectionsRoute: ConnectionsRoute,
   DeviceRoute: DeviceRoute,
   SettingsRoute: SettingsRoute,
+  SleepyDeviceRoute: SleepyDeviceRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

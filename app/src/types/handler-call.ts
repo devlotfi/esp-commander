@@ -32,14 +32,23 @@ export interface Value {
   max?: number;
 }
 
-export interface IOTCAction {
+export interface ESPCommanderAction {
   name: string;
   parameters?: Value[];
   results?: Value[];
 }
 
-export interface IOTCQuery {
+export interface ESPCommanderSleepyAction {
   name: string;
+  parameters?: Value[];
+}
+
+export interface ESPCommanderQuery {
+  name: string;
+  results: Value[];
+}
+
+export interface ESPCommanderSleepyQuery {
   results: Value[];
 }
 

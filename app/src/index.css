@@ -196,7 +196,6 @@
     @apply border border-border;
     background: color-mix(in srgb, var(--surface), transparent 80%) !important;
   }
-
   .avatar__fallback {
     background: transparent;
   }
@@ -204,14 +203,17 @@
   .table-root {
     background: transparent;
   }
-
   .table__header {
     @apply text-foreground;
     background: transparent;
   }
-
   .table__cell {
     background: color-mix(in srgb, var(--surface), transparent 60%);
+  }
+
+  .chip--default {
+    @apply border border-border text-foreground;
+    background: color-mix(in srgb, var(--surface), transparent 70%) !important;
   }
 }
 
@@ -237,7 +239,7 @@
     --accent: #e8362d;
 
     --border: #eeedef;
-    --separator: #c0c4cf;
+    --separator: #aeb2bb;
 
     --field-background: var(--background);
     --field-foreground: var(--foreground);

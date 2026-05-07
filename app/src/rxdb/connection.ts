@@ -8,6 +8,8 @@ export interface ConnectionDocType {
   password: string | null;
   discoveryTopic: string;
   responseDiscoveryTopic: string;
+  sleepyDeviceDiscoveryTopic: string | null;
+  sleepyDeviceResponseDiscoveryTopic: string | null;
 }
 
 export type ConnectionCollection = RxCollection<ConnectionDocType>;
@@ -45,6 +47,21 @@ export const connectionSchemaLiteral: RxJsonSchema<ConnectionDocType> = {
       type: "string",
       maxLength: 255,
     },
+    sleepyDeviceDiscoveryTopic: {
+      type: "string",
+      maxLength: 255,
+    },
+    sleepyDeviceResponseDiscoveryTopic: {
+      type: "string",
+      maxLength: 255,
+    },
   },
-  required: ["id", "url", "discoveryTopic", "responseDiscoveryTopic"],
+  required: [
+    "id",
+    "url",
+    "discoveryTopic",
+    "responseDiscoveryTopic",
+    "sleepyDeviceDiscoveryTopic",
+    "sleepyDeviceResponseDiscoveryTopic",
+  ],
 };

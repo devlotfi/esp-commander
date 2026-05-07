@@ -9,7 +9,7 @@ import type { DeviceSchema } from "../types/device";
 
 export type FunctionMeta = {
   deviceId: string;
-  type: "query" | "action";
+  type: "query" | "action" | "sleepyQuery" | "sleepyAction";
   originalName: string;
 };
 

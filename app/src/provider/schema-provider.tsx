@@ -4,8 +4,8 @@ import { useDiscoverDevices } from "../hooks/use-dsicover-devices";
 import { useQueries } from "@tanstack/react-query";
 import type { DeviceSchema } from "../types/device";
 import {
-  type IOTCQuery,
-  type IOTCAction,
+  type ESPCommanderQuery,
+  type ESPCommanderAction,
   ResponseStatus,
 } from "../types/handler-call";
 import { deviceSchemasToGeminiFunctions } from "../utils/gemini-schema";
@@ -21,8 +21,8 @@ export default function SchemaProvider({ children }: PropsWithChildren) {
       queryKey: ["SCHEMA", device.id],
       queryFn: async ({ signal }) => {
         const res = await mqttQuery<{
-          queries: IOTCQuery[];
-          actions: IOTCAction[];
+          queries: ESPCommanderQuery[];
+          actions: ESPCommanderAction[];
         }>({
           client: connectionData.client,
           requestTopic: device.requestTopic,

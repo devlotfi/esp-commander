@@ -70,10 +70,13 @@ export default function BottomTabs() {
       }}
     >
       <div className="flex items-center w-full gap-[0.5rem] p-[0.3rem]">
-        <BottomTabsButton path="/" icon={"cpu"}>
+        <BottomTabsButton path="/" icon={"microchip"}>
           {t("devices")}
         </BottomTabsButton>
-        <BottomTabsButton path="/connections" icon={"satellite-dish"}>
+        <BottomTabsButton
+          path="/connections"
+          icon={"chevrons-left-right-ellipsis"}
+        >
           {t("connections")}
         </BottomTabsButton>
         <BottomTabsButton path="/ai" icon={"brain-circuit"}>

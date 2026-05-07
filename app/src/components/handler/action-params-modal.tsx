@@ -17,7 +17,7 @@ import {
 import {
   ValueType,
   type HandlerData,
-  type IOTCAction,
+  type ESPCommanderAction,
   type Value,
 } from "../../types/handler-call";
 import { useFormik } from "formik";
@@ -27,7 +27,7 @@ import { DynamicIcon } from "lucide-react/dynamic";
 import { useTranslation } from "react-i18next";
 import { Play } from "lucide-react";
 
-function setupInitialValues(action: IOTCAction): HandlerData {
+function setupInitialValues(action: ESPCommanderAction): HandlerData {
   if (!action.parameters) return {};
   const actionData: HandlerData = {};
   for (const parameter of action.parameters) {
@@ -62,7 +62,7 @@ function setupInitialValues(action: IOTCAction): HandlerData {
   return actionData;
 }
 
-function setupYupSchema(action: IOTCAction) {
+function setupYupSchema(action: ESPCommanderAction) {
   if (!action.parameters) return {};
   const yupObj: Record<string, yup.AnySchema> = {};
   for (const parameter of action.parameters) {
@@ -122,7 +122,7 @@ function FieldLabel({ parameter }: { parameter: Value }) {
 
 interface ActionParamsModalProps {
   state: UseOverlayStateReturn;
-  action: IOTCAction;
+  action: ESPCommanderAction;
   onSubmit: (actionData: HandlerData) => void;
 }
 

@@ -1,15 +1,17 @@
 import { Card, Chip } from "@heroui/react";
-import type { Device } from "../types/device";
 import { Globe } from "lucide-react";
-import DataRow from "./data-row";
+import DataRow from "../data-row";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import type { SleepyDevice } from "../../types/sleepy-device";
 
-interface DeviceComponentProps {
-  device: Device;
+interface SleepyDeviceComponentProps {
+  sleepyDevice: SleepyDevice;
 }
 
-export default function DeviceComponent({ device }: DeviceComponentProps) {
+export default function SleepyDeviceComponent({
+  sleepyDevice,
+}: SleepyDeviceComponentProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const navigate = useNavigate();
@@ -20,30 +22,32 @@ export default function DeviceComponent({ device }: DeviceComponentProps) {
       onClick={() => {
         router.update({
           context: {
-            device,
+            sleepyDevice,
           },
         });
-        navigate({ to: "/device" });
+        navigate({ to: "/sleepy-device" });
       }}
     >
       <Card.Header className="flex-row justify-between items-center">
-        <Card.Title>{device.name}</Card.Title>
+        <Chip className="text-[11pt]">
+          <Chip.Label>{sleepyDevice.name}</Chip.Label>
+        </Chip>
 
-        <Chip color="success">
+        <Chip color="success" variant="primary">
           <Chip.Label>{t("online")}</Chip.Label>
           <Globe className="size-[1rem]"></Globe>
         </Chip>
       </Card.Header>
       <Card.Content>
-        <DataRow name="ID" value={device.id} fold></DataRow>
+        <DataRow name="ID" value={sleepyDevice.id} fold></DataRow>
         <DataRow
-          name="Request topic"
-          value={device.requestTopic}
+          name={t("commandTopic")}
+          value={sleepyDevice.commandTopic}
           fold
         ></DataRow>
         <DataRow
-          name="Response topic"
-          value={device.responseTopic}
+          name={t("dataTopic")}
+          value={sleepyDevice.dataTopic}
           fold
         ></DataRow>
       </Card.Content>

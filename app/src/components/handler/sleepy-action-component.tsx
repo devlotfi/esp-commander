@@ -1,63 +1,43 @@
 import { Button, Card, Surface, toast, useOverlayState } from "@heroui/react";
 import {
-  ResponseStatus,
   type ErrorResponse,
   type HandlerData,
-  type ESPCommanderAction,
+  type ESPCommanderSleepyAction,
 } from "../../types/handler-call";
-import { useContext, useRef, useState } from "react";
+import { useContext } from "react";
 import { MqttContext } from "../../context/mqtt-context";
 import { useRouteContext } from "@tanstack/react-router";
 import ValueRow from "./value-row";
-import {
-  Braces,
-  Check,
-  InfoIcon,
-  Play,
-  SquareFunction,
-  Variable,
-} from "lucide-react";
+import { Check, InfoIcon, Play, SquareFunction, Variable } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import EmptyHandlerRow from "./empty-handler-row";
 import ActionParamsModal from "./action-params-modal";
 import { useTranslation } from "react-i18next";
-import { mqttAction } from "../../utils/mqtt-action";
+import { mqttSleepyAction } from "../../utils/mqtt-sleepy-action";
 
-interface ActionComponentProps {
-  action: ESPCommanderAction;
+interface SleepyActionComponentProps {
+  action: ESPCommanderSleepyAction;
 }
 
-export default function ActionComponent({ action }: ActionComponentProps) {
+export default function SleepyActionComponent({
+  action,
+}: SleepyActionComponentProps) {
   const { t } = useTranslation();
   const { connectionData } = useContext(MqttContext);
-  const { device } = useRouteContext({ from: "/device" });
+  const { sleepyDevice } = useRouteContext({ from: "/sleepy-device" });
   const state = useOverlayState();
-  const [results, setResults] = useState<HandlerData>({});
-  if (!connectionData || !device) throw new Error("Missing data");
+  if (!connectionData || !sleepyDevice) throw new Error("Missing data");
 
-  const abortControllerRef = useRef<AbortController | null>(null);
   const { mutate, isPending } = useMutation({
     mutationFn: async (parameters: HandlerData) => {
-      abortControllerRef.current?.abort();
-      const controller = new AbortController();
-      abortControllerRef.current = controller;
-
-      const res = await mqttAction({
+      await mqttSleepyAction({
         client: connectionData.client,
-        requestTopic: device.requestTopic,
-        responseTopic: device.responseTopic,
+        commandTopic: sleepyDevice.commandTopic,
         action: action.name,
         parameters,
-        signal: controller.signal,
       });
-
-      if (res.status === ResponseStatus.ERROR) throw new Error(res.code);
-      console.log("res", res.results);
-
-      return res.results;
     },
-    onSuccess(data) {
-      setResults(data);
+    onSuccess() {
       toast(t("actionSuccess"), {
         indicator: <Check />,
         variant: "success",
@@ -122,24 +102,6 @@ export default function ActionComponent({ action }: ActionComponentProps) {
                 <ValueRow
                   key={`${parameter.name}-${index}`}
                   value={parameter}
-                ></ValueRow>
-              ))
-            ) : (
-              <EmptyHandlerRow></EmptyHandlerRow>
-            )}
-          </Surface>
-
-          <div className="flex items-center gap-[0.5rem] text-[11pt] pl-[0.5rem] opacity-70">
-            <Braces className="size-[13pt]"></Braces>
-            <div className="flex">{t("results")}</div>
-          </div>
-          <Surface className="flex flex-col gap-[0.5rem] p-[0.5rem]">
-            {action.results && action.results.length ? (
-              action.results.map((result, index) => (
-                <ValueRow
-                  key={`${result.name}-${index}`}
-                  value={result}
-                  valueData={results[result.name]}
                 ></ValueRow>
               ))
             ) : (

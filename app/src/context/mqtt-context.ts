@@ -17,10 +17,14 @@ export function copyConnectionData(
       id: connectionData.info.id,
       name: connectionData.info.name,
       url: connectionData.info.url,
-      discoveryTopic: connectionData.info.discoveryTopic,
-      responseDiscoveryTopic: connectionData.info.responseDiscoveryTopic,
       username: connectionData.info.username,
       password: connectionData.info.password,
+      discoveryTopic: connectionData.info.discoveryTopic,
+      responseDiscoveryTopic: connectionData.info.responseDiscoveryTopic,
+      sleepyDeviceDiscoveryTopic:
+        connectionData.info.sleepyDeviceDiscoveryTopic,
+      sleepyDeviceResponseDiscoveryTopic:
+        connectionData.info.sleepyDeviceResponseDiscoveryTopic,
     },
   };
 }
