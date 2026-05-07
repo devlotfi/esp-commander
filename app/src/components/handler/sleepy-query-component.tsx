@@ -38,7 +38,7 @@ export default function SleepyQueryComponent({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-[0.5rem] text-[13pt] font-bold pl-[0.5rem] pb-[0.5rem]">
             <SquareFunction className="size-[13pt]"></SquareFunction>
-            <div className="flex">{"sleepyDeviceData"}</div>
+            <div className="flex">{t("data")}</div>
           </div>
 
           <Button
