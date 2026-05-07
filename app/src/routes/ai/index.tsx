@@ -28,7 +28,8 @@ export const Route = createFileRoute("/ai/")({
 
 function RouteComponent() {
   const { t } = useTranslation();
-  const { devices, functions, lookup } = useContext(SchemaContext);
+  const { devices, sleepyDevices, functions, lookup } =
+    useContext(SchemaContext);
   const { ai } = useContext(GeminiContext);
   if (!ai) throw new Error("No ai client");
 
@@ -157,6 +158,7 @@ function RouteComponent() {
             content={content}
             lookup={lookup}
             devices={devices}
+            sleepyDevices={sleepyDevices}
             respondToModel={(data) => respondToModelMutation.mutate({ data })}
           ></ModelMessage>
         );

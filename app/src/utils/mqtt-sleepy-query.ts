@@ -1,14 +1,18 @@
 import type { MqttClient } from "mqtt";
-import type { SleepyDeviceSchema } from "../types/sleepy-device";
+import type {
+  SleepyDevice,
+  SleepyDeviceData,
+  SleepyDeviceSchema,
+} from "../types/sleepy-device";
 
 export function mqttSleepyQuery({
   client,
-  dataTopic,
+  sleepyDevice,
   timeoutMs = 10000,
   signal,
 }: {
   client: MqttClient;
-  dataTopic: string;
+  sleepyDevice: SleepyDevice;
   timeoutMs?: number;
   signal?: AbortSignal;
 }): Promise<SleepyDeviceSchema> {
@@ -23,7 +27,7 @@ export function mqttSleepyQuery({
       if (timeout) clearTimeout(timeout);
 
       // one-shot: unsubscribe when done
-      client.unsubscribe(dataTopic);
+      client.unsubscribe(sleepyDevice.dataTopic);
     };
 
     const finish = (cb: () => void) => {
@@ -38,12 +42,20 @@ export function mqttSleepyQuery({
     };
 
     const onMessage = (topic: string, message: Buffer) => {
-      if (topic !== dataTopic) return;
+      if (topic !== sleepyDevice.dataTopic) return;
 
       try {
-        const payload = JSON.parse(message.toString()) as SleepyDeviceSchema;
+        const payload = JSON.parse(message.toString()) as SleepyDeviceData;
 
-        finish(() => resolve(payload));
+        finish(() =>
+          resolve({
+            ...payload,
+            id: sleepyDevice.id,
+            name: sleepyDevice.name,
+            commandTopic: sleepyDevice.commandTopic,
+            dataTopic: sleepyDevice.dataTopic,
+          }),
+        );
       } catch {
         // ignore malformed payload
       }
@@ -64,7 +76,7 @@ export function mqttSleepyQuery({
     client.on("message", onMessage);
 
     // Important: only start timeout after SUBACK
-    client.subscribe(dataTopic, { qos: 1 }, (err) => {
+    client.subscribe(sleepyDevice.dataTopic, { qos: 1 }, (err) => {
       if (err) {
         finish(() => reject(err));
         return;

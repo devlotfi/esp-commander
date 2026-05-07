@@ -29,6 +29,8 @@ import type { ModelResponseData } from "../../types/model-response-data";
 import { useTranslation } from "react-i18next";
 import { Button, Spinner, toast } from "@heroui/react";
 import { CircleOff, InfoIcon, Play } from "lucide-react";
+import { mqttSleepyQuery } from "../../utils/mqtt-sleepy-query";
+import { mqttSleepyAction } from "../../utils/mqtt-sleepy-action";
 
 export const Route = createFileRoute("/ai/live")({
   component: RouteComponent,
@@ -246,7 +248,8 @@ function RouteComponent() {
   if (!connectionData) throw new Error("Missing data");
   const { ai } = useContext(GeminiContext);
   if (!ai) throw new Error("No ai client");
-  const { devices, functions, lookup } = useContext(SchemaContext);
+  const { devices, sleepyDevices, functions, lookup } =
+    useContext(SchemaContext);
   const [status, setStatus] = useState<LiveChatStatus>(LiveChatStatus.IDLE);
 
   const sessionRef = useRef<Awaited<
@@ -269,14 +272,19 @@ function RouteComponent() {
       if (!functionCall.name) return null;
       const originalFunction = lookup.get(functionCall.name);
       if (!originalFunction) return null;
-      const device = devices.find((d) => d.id === originalFunction.deviceId);
-      if (!device) return null;
+      const device = devices.find(
+        (device) => device.id === originalFunction.deviceId,
+      );
+      const sleepyDevice = sleepyDevices.find(
+        (sleepyDevice) => sleepyDevice.id === originalFunction.deviceId,
+      );
 
       abortControllerRef.current?.abort();
       const controller = new AbortController();
       abortControllerRef.current = controller;
 
       if (originalFunction.type === "query") {
+        if (!device) return null;
         const res = await mqttQuery({
           client: connectionData.client,
           requestTopic: device.requestTopic,
@@ -294,6 +302,7 @@ function RouteComponent() {
               : { status: "success" },
         };
       } else if (originalFunction.type === "action") {
+        if (!device) return null;
         const res = await mqttAction({
           client: connectionData.client,
           requestTopic: device.requestTopic,
@@ -310,6 +319,35 @@ function RouteComponent() {
             Object.keys(res.results).length > 0
               ? res.results
               : { status: "success" },
+        };
+      } else if (originalFunction.type === "sleepyQuery") {
+        if (!sleepyDevice) return null;
+        console.log("sleepy query");
+        const res = await mqttSleepyQuery({
+          client: connectionData.client,
+          sleepyDevice,
+        });
+        return {
+          functionCall,
+          originalFunction,
+          data:
+            Object.keys(res.results).length > 0
+              ? res.results
+              : { status: "success" },
+        };
+      } else if (originalFunction.type === "sleepyAction") {
+        if (!sleepyDevice) return null;
+        console.log("sleepy action");
+        await mqttSleepyAction({
+          client: connectionData.client,
+          action: originalFunction.originalName,
+          commandTopic: sleepyDevice.commandTopic,
+          parameters: functionCall.args as HandlerData,
+        });
+        return {
+          functionCall,
+          originalFunction,
+          data: { status: "success" },
         };
       }
       return null;

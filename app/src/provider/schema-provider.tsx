@@ -8,14 +8,22 @@ import {
   type ESPCommanderAction,
   ResponseStatus,
 } from "../types/handler-call";
-import { deviceSchemasToGeminiFunctions } from "../utils/gemini-schema";
+import {
+  deviceSchemasToGeminiFunctions,
+  sleepyDeviceSchemasToGeminiFunctions,
+} from "../utils/gemini-schema";
 import { mqttQuery } from "../utils/mqtt-query";
 import { MqttContext } from "../context/mqtt-context";
+import { useDiscoverSleepyDevices } from "../hooks/use-dsicover-sleepy-devices";
+import { mqttSleepyQuery } from "../utils/mqtt-sleepy-query";
 
 export default function SchemaProvider({ children }: PropsWithChildren) {
   const { connectionData } = useContext(MqttContext);
   if (!connectionData) throw new Error("No connection");
+
   const { devices } = useDiscoverDevices();
+  const { sleepyDevices } = useDiscoverSleepyDevices();
+
   const deviceSchemaQueries = useQueries({
     queries: devices.map((device) => ({
       queryKey: ["SCHEMA", device.id],
@@ -45,8 +53,29 @@ export default function SchemaProvider({ children }: PropsWithChildren) {
     })),
   });
 
-  const { functions, lookup } = deviceSchemasToGeminiFunctions(
+  const sleepyDeviceSchemaQueries = useQueries({
+    queries: sleepyDevices.map((sleepyDevice) => ({
+      queryKey: ["SLEEPY_SCHEMA", sleepyDevice.id],
+      queryFn: async ({ signal }) => {
+        const res = await mqttSleepyQuery({
+          client: connectionData.client,
+          sleepyDevice,
+          signal,
+        });
+        console.log("res", res);
+
+        return res;
+      },
+    })),
+  });
+
+  const deviceGeminiData = deviceSchemasToGeminiFunctions(
     deviceSchemaQueries
+      .map((query) => query.data)
+      .filter((item) => item !== undefined),
+  );
+  const sleepyDeviceGeminiData = sleepyDeviceSchemasToGeminiFunctions(
+    sleepyDeviceSchemaQueries
       .map((query) => query.data)
       .filter((item) => item !== undefined),
   );
@@ -55,8 +84,15 @@ export default function SchemaProvider({ children }: PropsWithChildren) {
     <SchemaContext.Provider
       value={{
         devices,
-        functions,
-        lookup,
+        sleepyDevices,
+        functions: [
+          ...deviceGeminiData.functions,
+          ...sleepyDeviceGeminiData.functions,
+        ],
+        lookup: new Map([
+          ...deviceGeminiData.lookup,
+          ...sleepyDeviceGeminiData.lookup,
+        ]),
       }}
     >
       {children}

@@ -24,6 +24,12 @@ export function isSleepyDevice(obj: unknown): obj is SleepyDevice {
   );
 }
 
+export interface SleepyDeviceData {
+  query: ESPCommanderSleepyQuery;
+  results: HandlerData;
+  actions: ESPCommanderSleepyAction[];
+}
+
 export interface SleepyDeviceSchema extends SleepyDevice {
   query: ESPCommanderSleepyQuery;
   results: HandlerData;

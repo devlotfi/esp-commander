@@ -92,4 +92,17 @@ export const EN: AppTranslation = {
   notificationsSubscribed: "Subscribed to notifications",
   notificationsNotSubscribed: "Not subscribed to notifications",
   mustAllowNotifications: "You must allow notifications",
+
+  sleepyDevices: "Sleepy devices",
+  requestTopic: "Request topic",
+  responseTopic: "Response topic",
+  commandTopic: "Command topic",
+  dataTopic: "Data topic",
+  data: "Data",
+  discovery: "Discovery",
+  discoveryTopic: "Discovery topic",
+  responseDiscoveryTopic: "Response discovery topic ",
+  useSleepyDeviceDiscovery: "Use sleepy device discovery",
+  sleepyDeviceDiscoveryTopic: "Sleepy device discovery topic",
+  sleepyDeviceResponseDiscoveryTopic: "Sleepy device response discovery topic",
 };

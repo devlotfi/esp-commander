@@ -1,0 +1,1 @@
+import{t as e}from"./v4-MQQqoY4g.js";async function t({client:t,commandTopic:n,action:r,parameters:i}){let a=e();t.publish(n,JSON.stringify({requestId:a,action:r,parameters:i}),{qos:1})}export{t};

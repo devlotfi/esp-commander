@@ -1,0 +1,1 @@
+var e=function(e){return e.INT=`INT`,e.RANGE=`RANGE`,e.FLOAT=`FLOAT`,e.DOUBLE=`DOUBLE`,e.BOOL=`BOOL`,e.STRING=`STRING`,e.ENUM=`ENUM`,e.COLOR=`COLOR`,e}({}),t=function(e){return e.OK=`OK`,e.ERROR=`ERROR`,e}({});export{e as n,t};

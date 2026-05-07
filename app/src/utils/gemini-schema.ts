@@ -2,6 +2,7 @@ import { type Schema, Type, type FunctionDeclaration } from "@google/genai";
 
 import type { Value } from "../types/handler-call";
 import type { DeviceSchema } from "../types/device";
+import type { SleepyDevice, SleepyDeviceSchema } from "../types/sleepy-device";
 
 // ----------------------------
 // Types
@@ -35,6 +36,10 @@ function normalizeName(name?: string): string {
 
 function normalizeDevicePrefix(device: DeviceSchema): string {
   return normalizeName(device.name ?? device.id ?? "device");
+}
+
+function normalizeSleepyDevicePrefix(sleepyDevice: SleepyDevice): string {
+  return normalizeName(sleepyDevice.name ?? sleepyDevice.id ?? "sleepyDevice");
 }
 
 function mapValueToSchema(value: Value): Schema {
@@ -209,6 +214,107 @@ export function deviceSchemasToGeminiFunctions(
       lookup.set(fnName, {
         deviceId: device.id,
         type: "action",
+        originalName: action.name,
+      });
+    }
+  }
+
+  return {
+    functions,
+    lookup,
+  };
+}
+
+export function sleepyDeviceSchemasToGeminiFunctions(
+  sleepyDevices: SleepyDeviceSchema[],
+): GeminiFunctionResult {
+  const functions: FunctionDeclaration[] = [];
+  const lookup = new Map<string, FunctionMeta>();
+
+  for (const sleepyDevice of sleepyDevices) {
+    if (!sleepyDevice?.id) {
+      console.warn("Skipping device with missing id", sleepyDevice);
+      continue;
+    }
+
+    const devicePrefix = normalizeSleepyDevicePrefix(sleepyDevice);
+    const deviceIdEnum = [sleepyDevice.id];
+
+    // -------- Query --------
+    if (sleepyDevice.query) {
+      const fnName = `${devicePrefix}_${normalizeName(`get_data`)}`;
+
+      const parameters: Schema = {
+        type: Type.OBJECT,
+        properties: {
+          deviceId: {
+            type: Type.STRING,
+            enum: deviceIdEnum,
+          },
+        },
+        required: ["deviceId"],
+      };
+
+      const response = buildObjectSchema(sleepyDevice.query.results);
+
+      functions.push({
+        name: fnName,
+        description: `Query data from device "${sleepyDevice.name ?? sleepyDevice.id}"`,
+        parameters,
+        ...(response ? { response } : {}),
+      });
+
+      lookup.set(fnName, {
+        deviceId: sleepyDevice.id,
+        type: "sleepyQuery",
+        originalName: `${sleepyDevice.name ?? sleepyDevice.id}-data`,
+      });
+    }
+
+    // -------- Actions --------
+    for (const action of sleepyDevice.actions || []) {
+      if (!action?.name) {
+        console.warn("Skipping action with missing name", action);
+        continue;
+      }
+
+      const fnName = `${devicePrefix}_${normalizeName(action.name)}`;
+
+      const properties: Record<string, Schema> = {
+        deviceId: {
+          type: Type.STRING,
+          enum: deviceIdEnum,
+        },
+      };
+
+      const required: string[] = ["deviceId"];
+
+      for (const param of action.parameters || []) {
+        if (!param?.name) continue;
+
+        const key = normalizeName(param.name);
+        properties[key] = mapValueToSchema(param);
+
+        if (param.required) {
+          required.push(key);
+        }
+      }
+
+      const parameters: Schema = {
+        type: Type.OBJECT,
+        properties,
+        required,
+      };
+
+      functions.push({
+        name: fnName,
+        description: `Execute "${action.name}" on device "${sleepyDevice.name ?? sleepyDevice.id}"`,
+        parameters,
+      });
+
+      lookup.set(fnName, {
+        deviceId: sleepyDevice.id,
+        type: "sleepyAction",
         originalName: action.name,
       });
     }

@@ -88,4 +88,17 @@ export interface AppTranslation {
   notificationsSubscribed: string;
   notificationsNotSubscribed: string;
   mustAllowNotifications: string;
+
+  sleepyDevices: string;
+  requestTopic: string;
+  responseTopic: string;
+  commandTopic: string;
+  dataTopic: string;
+  data: string;
+  discovery: string;
+  discoveryTopic: string;
+  responseDiscoveryTopic: string;
+  useSleepyDeviceDiscovery: string;
+  sleepyDeviceDiscoveryTopic: string;
+  sleepyDeviceResponseDiscoveryTopic: string;
 }

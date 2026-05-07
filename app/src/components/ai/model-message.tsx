@@ -11,16 +11,21 @@ import type { Device } from "../../types/device";
 import { mqttAction } from "../../utils/mqtt-action";
 import type { ModelResponseData } from "../../types/model-response-data";
 import { sleep } from "../../utils/sleep";
+import { mqttSleepyQuery } from "../../utils/mqtt-sleepy-query";
+import type { SleepyDevice } from "../../types/sleepy-device";
+import { mqttSleepyAction } from "../../utils/mqtt-sleepy-action";
 
 export default function ModelMessage({
   content,
   lookup,
   devices,
+  sleepyDevices,
   respondToModel,
 }: {
   content: Content;
   lookup: Map<string, FunctionMeta>;
   devices: Device[];
+  sleepyDevices: SleepyDevice[];
   respondToModel: (data: ModelResponseData[]) => void;
 }) {
   const { connectionData } = useContext(MqttContext);
@@ -42,13 +47,16 @@ export default function ModelMessage({
         const device = devices.find(
           (device) => device.id === originalFunction.deviceId,
         );
-        if (!device) return null;
+        const sleepyDevice = sleepyDevices.find(
+          (sleepyDevice) => sleepyDevice.id === originalFunction.deviceId,
+        );
 
         await sleep(index * 300);
         console.log("function call", functionCall);
         console.log("function original", lookup.get(functionCall.name));
 
         if (originalFunction.type === "query") {
+          if (!device) return null;
           console.log("query");
           const res = await mqttQuery({
             client: connectionData.client,
@@ -72,6 +80,7 @@ export default function ModelMessage({
             };
           }
         } else if (originalFunction.type === "action") {
+          if (!device) return null;
           console.log("action");
           const res = await mqttAction({
             client: connectionData.client,
@@ -95,6 +104,41 @@ export default function ModelMessage({
               data: { status: "success" },
             };
           }
+        } else if (originalFunction.type === "sleepyQuery") {
+          if (!sleepyDevice) return null;
+          console.log("sleepy query");
+          const res = await mqttSleepyQuery({
+            client: connectionData.client,
+            sleepyDevice,
+            signal,
+          });
+          if (Object.keys(res.results).length > 0) {
+            return {
+              functionCall,
+              originalFunction,
+              data: res.results,
+            };
+          } else {
+            return {
+              functionCall,
+              originalFunction,
+              data: { status: "success" },
+            };
+          }
+        } else if (originalFunction.type === "sleepyAction") {
+          if (!sleepyDevice) return null;
+          console.log("sleepy action");
+          await mqttSleepyAction({
+            client: connectionData.client,
+            action: originalFunction.originalName,
+            commandTopic: sleepyDevice.commandTopic,
+            parameters: functionCall.args as HandlerData,
+          });
+          return {
+            functionCall,
+            originalFunction,
+            data: { status: "success" },
+          };
         }
 
         return null;

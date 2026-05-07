@@ -56,7 +56,7 @@ export default function AddConnectionModal({ state }: AddConnectionModalProps) {
       password: "",
       discoveryTopic: "esp-commander/discovery/request",
       responseDiscoveryTopic: "esp-commander/discovery/response",
-      usesleepyDeviceDiscovery: true,
+      useSleepyDeviceDiscovery: true,
       sleepyDeviceDiscoveryTopic:
         "esp-commander/discovery/request/sleepy-peers",
       sleepyDeviceResponseDiscoveryTopic:
@@ -86,17 +86,17 @@ export default function AddConnectionModal({ state }: AddConnectionModalProps) {
       }),
       discoveryTopic: yup.string().required(),
       responseDiscoveryTopic: yup.string().required(),
-      usesleepyDeviceDiscovery: yup.bool(),
+      useSleepyDeviceDiscovery: yup.bool(),
       sleepyDeviceDiscoveryTopic: yup
         .string()
-        .when("usesleepyDeviceDiscovery", {
+        .when("useSleepyDeviceDiscovery", {
           is: true,
           then: (schema) => schema.required(),
           otherwise: (schema) => schema.notRequired(),
         }),
       sleepyDeviceResponseDiscoveryTopic: yup
         .string()
-        .when("usesleepyDeviceDiscovery", {
+        .when("useSleepyDeviceDiscovery", {
           is: true,
           then: (schema) => schema.required(),
           otherwise: (schema) => schema.notRequired(),
@@ -198,19 +198,19 @@ export default function AddConnectionModal({ state }: AddConnectionModalProps) {
                   ></ValidatedTextField>
 
                   <Switch
-                    isSelected={formik.values.usesleepyDeviceDiscovery}
+                    isSelected={formik.values.useSleepyDeviceDiscovery}
                     onChange={(value) =>
-                      formik.setFieldValue("usesleepyDeviceDiscovery", value)
+                      formik.setFieldValue("useSleepyDeviceDiscovery", value)
                     }
                   >
                     <Switch.Control>
                       <Switch.Thumb />
                     </Switch.Control>
                     <Label className="text-sm">
-                      {t("usesleepyDeviceDiscovery")}
+                      {t("useSleepyDeviceDiscovery")}
                     </Label>
                   </Switch>
-                  {formik.values.usesleepyDeviceDiscovery ? (
+                  {formik.values.useSleepyDeviceDiscovery ? (
                     <>
                       <ValidatedTextField
                         formik={formik}

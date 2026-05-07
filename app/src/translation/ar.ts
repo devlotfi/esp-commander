@@ -92,4 +92,17 @@ export const AR: AppTranslation = {
   notificationsSubscribed: "مشترك في الإشعارات",
   notificationsNotSubscribed: "غير مشترك في الإشعارات",
   mustAllowNotifications: "يجب عليك تفعيل التنبيهات",
+
+  sleepyDevices: "أجهزة خاملة",
+  requestTopic: "موضوع الطلب",
+  responseTopic: "موضوع الاستجابة",
+  commandTopic: "موضوع الأمر",
+  dataTopic: "موضوع البيانات",
+  data: "البيانات",
+  discovery: "الاكتشاف",
+  discoveryTopic: "موضوع الاكتشاف",
+  responseDiscoveryTopic: "موضوع اكتشاف الاستجابة",
+  useSleepyDeviceDiscovery: "استخدام اكتشاف الأجهزة الخاملة",
+  sleepyDeviceDiscoveryTopic: "موضوع اكتشاف الأجهزة الخاملة",
+  sleepyDeviceResponseDiscoveryTopic: "موضوع اكتشاف استجابة الأجهزة الخاملة",
 };

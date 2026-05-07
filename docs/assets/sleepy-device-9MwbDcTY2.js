@@ -1,0 +1,1 @@
+function e(e){if(typeof e!=`object`||!e)return!1;let t=e;return typeof t.id==`string`&&typeof t.name==`string`&&typeof t.commandTopic==`string`&&typeof t.dataTopic==`string`}export{e as t};

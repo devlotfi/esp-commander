@@ -2,6 +2,7 @@ import { useContext, useEffect, useState, useCallback } from "react";
 import { MqttContext } from "../context/mqtt-context";
 import {
   type SleepyDevice,
+  type SleepyDeviceData,
   type SleepyDeviceSchema,
 } from "../types/sleepy-device";
 
@@ -10,7 +11,7 @@ export function useSleepyDeviceQuery(sleepyDevice: SleepyDevice) {
   if (!connectionData) throw new Error("No connection");
 
   const [sleepyDeviceData, setSleepyDeviceData] =
-    useState<SleepyDeviceSchema | null>(null);
+    useState<SleepyDeviceData | null>(null);
 
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -45,7 +46,15 @@ export function useSleepyDeviceQuery(sleepyDevice: SleepyDevice) {
   }, [connectionData, sleepyDevice.dataTopic, refreshKey]);
 
   return {
-    sleepyDeviceData,
+    sleepyDeviceData: sleepyDeviceData
+      ? ({
+          ...sleepyDeviceData,
+          id: sleepyDevice.id,
+          name: sleepyDevice.name,
+          commandTopic: sleepyDevice.commandTopic,
+          dataTopic: sleepyDevice.dataTopic,
+        } satisfies SleepyDeviceSchema)
+      : null,
     refetch,
   };
 }

@@ -38,10 +38,14 @@ export default function EditConnectionModal({
         data.name = values.name;
         data.name = values.name;
         data.url = values.url;
-        data.discoveryTopic = values.discoveryTopic;
-        data.responseDiscoveryTopic = values.responseDiscoveryTopic;
         data.username = values.username || null;
         data.password = values.password || null;
+        data.discoveryTopic = values.discoveryTopic;
+        data.responseDiscoveryTopic = values.responseDiscoveryTopic;
+        data.sleepyDeviceDiscoveryTopic =
+          values.sleepyDeviceDiscoveryTopic || null;
+        data.sleepyDeviceResponseDiscoveryTopic =
+          values.sleepyDeviceResponseDiscoveryTopic || null;
         return data;
       });
       queryClient.resetQueries({
@@ -55,10 +59,15 @@ export default function EditConnectionModal({
     initialValues: {
       name: connection.name,
       url: connection.url,
+      useAuth: connection.username !== null,
       username: connection.username || "",
       password: connection.password || "",
       discoveryTopic: connection.discoveryTopic,
       responseDiscoveryTopic: connection.responseDiscoveryTopic,
+      useSleepyDeviceDiscovery: connection.sleepyDeviceDiscoveryTopic !== null,
+      sleepyDeviceDiscoveryTopic: connection.sleepyDeviceDiscoveryTopic || "",
+      sleepyDeviceResponseDiscoveryTopic:
+        connection.sleepyDeviceResponseDiscoveryTopic || "",
     },
     validationSchema: yup.object({
       name: yup.string().required(),
@@ -71,19 +80,40 @@ export default function EditConnectionModal({
           },
         )
         .required(),
-      username: yup.string(),
-      password: yup.string(),
+      useAuth: yup.bool(),
+      username: yup.string().when("useAuth", {
+        is: true,
+        then: (schema) => schema.required(),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+      password: yup.string().when("useAuth", {
+        is: true,
+        then: (schema) => schema.required(),
+        otherwise: (schema) => schema.notRequired(),
+      }),
       discoveryTopic: yup.string().required(),
       responseDiscoveryTopic: yup.string().required(),
+      useSleepyDeviceDiscovery: yup.bool(),
+      sleepyDeviceDiscoveryTopic: yup
+        .string()
+        .when("useSleepyDeviceDiscovery", {
+          is: true,
+          then: (schema) => schema.required(),
+          otherwise: (schema) => schema.notRequired(),
+        }),
+      sleepyDeviceResponseDiscoveryTopic: yup
+        .string()
+        .when("useSleepyDeviceDiscovery", {
+          is: true,
+          then: (schema) => schema.required(),
+          otherwise: (schema) => schema.notRequired(),
+        }),
     }),
     onSubmit(values) {
       mutate(values);
     },
   });
 
-  const [useAuth, setUseAuth] = useState<boolean>(
-    connection.username ? true : false,
-  );
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
 
@@ -94,7 +124,7 @@ export default function EditConnectionModal({
       variant="blur"
     >
       <Modal.Container placement="center">
-        <Modal.Dialog>
+        <Modal.Dialog className="w-full max-w-screen-lg">
           <Modal.CloseTrigger />
           <Modal.Header>
             <Modal.Icon className="bg-accent-soft text-accent-soft-foreground">
@@ -107,64 +137,106 @@ export default function EditConnectionModal({
               onSubmit={formik.handleSubmit}
               className="flex flex-col gap-[0.5rem]"
             >
-              <ValidatedTextField
-                formik={formik}
-                name="name"
-                textFieldProps={{ isRequired: true }}
-                labelProps={{ children: t("name") }}
-              ></ValidatedTextField>
-              <ValidatedTextField
-                formik={formik}
-                name="url"
-                textFieldProps={{ isRequired: true }}
-                labelProps={{ children: "URL" }}
-              ></ValidatedTextField>
-              <ValidatedTextField
-                formik={formik}
-                name="discoveryTopic"
-                textFieldProps={{ isRequired: true }}
-                labelProps={{ children: "Discovery topic" }}
-              ></ValidatedTextField>
-              <ValidatedTextField
-                formik={formik}
-                name="responseDiscoveryTopic"
-                textFieldProps={{ isRequired: true }}
-                labelProps={{ children: "Response discovery topic" }}
-              ></ValidatedTextField>
+              <div className="flex flex-col lg:flex-row flex-1 gap-[1rem]">
+                <div className="flex flex-1 flex-col gap-[0.5rem]">
+                  <ValidatedTextField
+                    formik={formik}
+                    name="name"
+                    textFieldProps={{ isRequired: true }}
+                    labelProps={{ children: t("name") }}
+                  ></ValidatedTextField>
+                  <ValidatedTextField
+                    formik={formik}
+                    name="url"
+                    textFieldProps={{ isRequired: true }}
+                    labelProps={{ children: "URL" }}
+                  ></ValidatedTextField>
 
-              <Switch isSelected={useAuth} onChange={setUseAuth}>
-                <Switch.Control>
-                  <Switch.Thumb />
-                </Switch.Control>
-                <Label className="text-sm">{t("useAuthenthication")}</Label>
-              </Switch>
-              {useAuth ? (
-                <>
+                  <Switch
+                    isSelected={formik.values.useAuth}
+                    onChange={(value) => formik.setFieldValue("useAuth", value)}
+                  >
+                    <Switch.Control>
+                      <Switch.Thumb />
+                    </Switch.Control>
+                    <Label className="text-sm">{t("useAuthenthication")}</Label>
+                  </Switch>
+                  {formik.values.useAuth ? (
+                    <>
+                      <ValidatedTextField
+                        formik={formik}
+                        name="username"
+                        labelProps={{ children: t("username") }}
+                      ></ValidatedTextField>
+                      <ValidatedTextField
+                        formik={formik}
+                        name="password"
+                        labelProps={{ children: t("password") }}
+                        inputProps={{
+                          type: isVisible ? "text" : "password",
+                        }}
+                        suffix={
+                          <Button
+                            isIconOnly
+                            variant="ghost"
+                            size="sm"
+                            onPress={toggleVisibility}
+                          >
+                            {isVisible ? <EyeOff></EyeOff> : <Eye></Eye>}
+                          </Button>
+                        }
+                      ></ValidatedTextField>
+                    </>
+                  ) : null}
+                </div>
+
+                <div className="flex flex-1 flex-col gap-[0.5rem]">
                   <ValidatedTextField
                     formik={formik}
-                    name="username"
-                    labelProps={{ children: t("username") }}
+                    name="discoveryTopic"
+                    textFieldProps={{ isRequired: true }}
+                    labelProps={{ children: "Discovery topic" }}
                   ></ValidatedTextField>
                   <ValidatedTextField
                     formik={formik}
-                    name="password"
-                    labelProps={{ children: t("password") }}
-                    inputProps={{
-                      type: isVisible ? "text" : "password",
-                    }}
-                    suffix={
-                      <Button
-                        isIconOnly
-                        variant="ghost"
-                        size="sm"
-                        onPress={toggleVisibility}
-                      >
-                        {isVisible ? <EyeOff></EyeOff> : <Eye></Eye>}
-                      </Button>
+                    name="responseDiscoveryTopic"
+                    textFieldProps={{ isRequired: true }}
+                    labelProps={{ children: "Response discovery topic" }}
+                  ></ValidatedTextField>
+
+                  <Switch
+                    isSelected={formik.values.useSleepyDeviceDiscovery}
+                    onChange={(value) =>
+                      formik.setFieldValue("useSleepyDeviceDiscovery", value)
                     }
-                  ></ValidatedTextField>
-                </>
-              ) : null}
+                  >
+                    <Switch.Control>
+                      <Switch.Thumb />
+                    </Switch.Control>
+                    <Label className="text-sm">
+                      {t("useSleepyDeviceDiscovery")}
+                    </Label>
+                  </Switch>
+                  {formik.values.useSleepyDeviceDiscovery ? (
+                    <>
+                      <ValidatedTextField
+                        formik={formik}
+                        name="sleepyDeviceDiscoveryTopic"
+                        labelProps={{
+                          children: t("sleepyDeviceDiscoveryTopic"),
+                        }}
+                      ></ValidatedTextField>
+                      <ValidatedTextField
+                        formik={formik}
+                        name="sleepyDeviceResponseDiscoveryTopic"
+                        labelProps={{
+                          children: t("sleepyDeviceResponseDiscoveryTopic"),
+                        }}
+                      ></ValidatedTextField>
+                    </>
+                  ) : null}
+                </div>
+              </div>
 
               <Button
                 fullWidth
