@@ -212,8 +212,11 @@
   }
 
   .chip--default {
-    @apply border border-border text-foreground;
+    @apply border border-border text-foreground max-w-[15rem];
     background: color-mix(in srgb, var(--surface), transparent 70%) !important;
+  }
+  .chip__label {
+    @apply whitespace-break-spaces;
   }
 }
 

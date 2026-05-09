@@ -18,7 +18,7 @@ export default function DataRow({
     <div
       className={cn(
         "flex flex-col mb-[0.3rem]",
-        !fold && "md:flex-row md:gap-[0.5rem] md:mb-0",
+        !fold && "md:flex-row md:items-center md:gap-[0.5rem] md:mb-0",
         className,
       )}
       {...props}
