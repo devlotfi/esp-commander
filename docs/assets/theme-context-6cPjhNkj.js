@@ -1,0 +1,1 @@
+import{a as e}from"./rolldown-runtime-COnpUsM8.js";import{oM as t}from"./lucide-react-gNxv7j5T.js";var n=e(t(),1),r=function(e){return e.LIGHT=`LIGHT`,e.DARK=`DARK`,e.SYSTEM=`SYSTEM`,e}({}),i={themeOption:r.SYSTEM,appliedTheme:r.LIGHT,accentColor:`#E8362D`,setTheme(){},applyAccentColor(){}},a=(0,n.createContext)(i);export{i as n,r,a as t};

@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import SectionHeader from "../components/section-header";
 import GeminiSettings from "../components/settings/gemini-settings";
 import DisplaySettings from "../components/settings/display-settings";
-import NotificationsSettings from "../components/settings/notifications-settings";
 
 export const Route = createFileRoute("/settings")({
   component: RouteComponent,
@@ -20,10 +19,9 @@ function RouteComponent() {
         <div className="flex flex-col lg:flex-row gap-[1rem]">
           <div className="flex flex-1 flex-col gap-[1rem]">
             <DisplaySettings></DisplaySettings>
-            <GeminiSettings></GeminiSettings>
           </div>
           <div className="flex flex-1 flex-col gap-[1rem]">
-            <NotificationsSettings></NotificationsSettings>
+            <GeminiSettings></GeminiSettings>
           </div>
         </div>
       </div>

@@ -1,5 +1,0 @@
-cloudflare_api_token = "cloudflare_api_token"
-account_id           = "account_id"
-api_secret           = "api_secret"
-vapid_public_key           = "vapid_public_key"
-vapid_private_key           = "vapid_private_key"
