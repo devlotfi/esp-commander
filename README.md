@@ -39,7 +39,6 @@ An app to controll IOT devices using MQTT
 ## Services
 
 <p float="left">
-  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/cloudflare.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/gemini.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/netlify.svg">
 </p>
@@ -63,10 +62,18 @@ An app to controll IOT devices using MQTT
 - We use a web PWA client to control IOT Devices using MQTT
 - It is possible to query data and perform actions
 - Its also possible to control devices using AI (Gemini), By using a classic chat interface or real-time voice conversation
-- IOT Devices can send notifications to the Cloudflare worker
-- The Cloudflare worker notifies the user via Web Push API
+- Devices are categorized into 2 types **Normal Devices** and **Sleepy Devices**
+- Normal devices use a request/response comunication and can be connected directly qith MQTT or via a gateway
+- Sleepy devices require the use of a gateway like [EspNowMqttGateway](https://github.com/devlotfi/esp-now-mqtt-gateway)
+- Sleepy devices are the low power devices that wake up occasionally, they send the data as a retained message to an mqtt topic and commands are recived and stored in the gateway for when the sleepy devices requests it
+
+## Direct Connection
 
 <img src="https://raw.githubusercontent.com/devlotfi/esp-commander/master/github-assets/working-diagram.png">
+
+## Gateway Connection
+
+<img src="https://raw.githubusercontent.com/devlotfi/esp-commander/master/github-assets/working-diagram-gateway.png">
 
 # Web App
 
@@ -74,5 +81,4 @@ An app to controll IOT devices using MQTT
 <img src="https://raw.githubusercontent.com/devlotfi/esp-commander/master/github-assets/preview-2.png">
 <img src="https://raw.githubusercontent.com/devlotfi/esp-commander/master/github-assets/preview-3.png">
 <img src="https://raw.githubusercontent.com/devlotfi/esp-commander/master/github-assets/preview-4.png">
-<img src="https://raw.githubusercontent.com/devlotfi/esp-commander/master/github-assets/preview-5.png">
-<img src="https://raw.githubusercontent.com/devlotfi/esp-commander/master/github-assets/preview-6.png">
+<img src="https://raw.githubusercontent.com/devlotfi/esp-commander/master/github-assets/preview-5.png"
