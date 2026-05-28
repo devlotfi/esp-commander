@@ -81,4 +81,4 @@ An app to controll IOT devices using MQTT
 <img src="https://raw.githubusercontent.com/devlotfi/esp-commander/master/github-assets/preview-2.png">
 <img src="https://raw.githubusercontent.com/devlotfi/esp-commander/master/github-assets/preview-3.png">
 <img src="https://raw.githubusercontent.com/devlotfi/esp-commander/master/github-assets/preview-4.png">
-<img src="https://raw.githubusercontent.com/devlotfi/esp-commander/master/github-assets/preview-5.png"
+<img src="https://raw.githubusercontent.com/devlotfi/esp-commander/master/github-assets/preview-5.png">
