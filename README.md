@@ -7,9 +7,6 @@ An app to controll IOT devices using MQTT
 # 📌 Contents
 
 - [Tech stack](#tech-stack)
-  - [App](#app)
-  - [IOT](#iot)
-  - [Diagrams](#diagrams)
 - [How does the system work ?](#how-does-the-system-work-)
 - [Web App](#web-app)
 
