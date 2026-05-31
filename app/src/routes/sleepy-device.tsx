@@ -91,7 +91,7 @@ function RouteComponent() {
             <div className="flex absolute h-[10rem] w-[15rem] rounded-full bg-accent blur-2xl opacity-20"></div>
           </div>
 
-          <div className="flex justify-center font-bold text-[20pt] z-10">
+          <div className="flex justify-center break-all text-center font-bold text-[20pt] z-10">
             {sleepyDevice.name}
           </div>
         </div>
