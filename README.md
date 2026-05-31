@@ -7,9 +7,6 @@ An app to controll IOT devices using MQTT
 # 📌 Contents
 
 - [Tech stack](#tech-stack)
-  - [App](#app)
-  - [IOT](#iot)
-  - [Diagrams](#diagrams)
 - [How does the system work ?](#how-does-the-system-work-)
 - [Web App](#web-app)
 
@@ -67,6 +64,7 @@ An app to controll IOT devices using MQTT
 - Normal devices use a request/response comunication and can be connected directly qith MQTT or via a gateway
 - Sleepy devices require the use of a gateway like [EspNowMqttGateway](https://github.com/devlotfi/esp-now-mqtt-gateway)
 - Sleepy devices are the low power devices that wake up occasionally, they send the data as a retained message to an mqtt topic and commands are recived and stored in the gateway for when the sleepy devices requests it
+- To use EspCommander on esp32 use the dedicated library in the [Releases](https://github.com/devlotfi/esp-commander/releases)
 
 ## Direct Connection
 
