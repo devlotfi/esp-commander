@@ -1,0 +1,69 @@
+---
+title: Introduction
+sidebar_position: 1
+---
+
+# EspCommander
+
+**EspCommander** is a framework-agnostic RPC library for ESP32 devices. It lets a device declare, in code, what it can *tell you* (**queries**) and what it can *do* (**actions**), and turns that declaration into a small JSON-in / JSON-out protocol — including a self-describing schema anyone can fetch at runtime.
+
+The library does not open a socket, subscribe to an MQTT topic, or listen on a serial port. **Transport is entirely up to you.** You feed it a JSON request string (from MQTT, HTTP, ESP-NOW, BLE, Serial — anything), and it hands you back a JSON response string. What happens in between — how the bytes got there — is your integration's job.
+
+## The two device shapes
+
+EspCommander ships two complementary APIs, because "always reachable" and "wakes up occasionally" devices need fundamentally different protocols:
+
+| | `Device` | `SleepyDevice` |
+|---|---|---|
+| Use case | Mains-powered / always listening | Battery-powered, deep-sleeps between wakes |
+| Model | Request → Response, matched by `requestId` | Push data + poll for one command, no request/response matching |
+| Can be queried on demand | Yes, any number of named queries | No — only one implicit query, sent unprompted on every wake |
+| Schema discovery | Explicit `__SCHEMA__` query, on demand | Bundled into every data push (queries + actions are re-announced every wake) |
+| Needs a store-and-forward gateway | No — any transport that can deliver a request and get a reply works | **Yes, always** — see [Sleepy Devices](./core-concepts/sleepy-devices) |
+
+## What a query or action looks like
+
+A **query** is a named, read-only operation with zero or more typed results:
+
+```json
+// Request
+{ "requestId": "r1", "query": "temperature" }
+// Response
+{ "requestId": "r1", "status": "OK", "results": { "celsius": 21.4 } }
+```
+
+An **action** is a named operation with typed parameters and typed results:
+
+```json
+// Request
+{ "requestId": "r2", "action": "setColor", "parameters": { "hex": "#FF8800" } }
+// Response
+{ "requestId": "r2", "status": "OK", "results": { "applied": true } }
+```
+
+Every parameter and result is described with a `Value` — a small typed schema (int, float, double, bool, string, ranged int, enum, or hex color) that the library validates on both the way in and the way out, so a handler function never has to hand-roll JSON parsing or bounds checking.
+
+## Key building blocks
+
+| Type | Role |
+|---|---|
+| `Value` | Describes and validates a single typed field (parameter or result) |
+| `Query` | A named, read-only operation — results only |
+| `Action` | A named operation — parameters in, results out |
+| `SleepyQuery` / `SleepyAction` | Their counterparts for devices that can't be queried on demand |
+| `Device` | Wires a set of queries/actions to `id`/`name`/topics, handles `request()`, `schema()`, `discovery()` |
+| `SleepyDevice` | Wires a single implicit query and a set of actions, handles `data()` (push) and `action()` (one-shot command) |
+| `StaticBufferAllocator` | A fixed-size arena allocator so `ArduinoJson` never touches the heap |
+
+## Requirements
+
+- **ArduinoJson v7** — the library uses the `ArduinoJson::Allocator` interface and the `JsonDocument(&allocator)` constructor, both v7-only APIs.
+- **ETL (Embedded Template Library)** — `etl::span`, `etl::optional`, and `etl::variant` are used throughout for zero-heap containers.
+- An ESP32 Arduino environment (uses `Serial` for logging).
+
+## Where to go next
+
+- [Installation](./installation)
+- [Quick Start](./quick-start)
+- [Architecture](./core-concepts/architecture)
+- [Sleepy Devices & the Gateway Requirement](./core-concepts/sleepy-devices) — read this before building a battery-powered node

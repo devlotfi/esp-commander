@@ -1,0 +1,110 @@
+---
+title: Values & Types
+sidebar_position: 2
+---
+
+# Values & Types (`Value`, `ValueType`)
+
+Every parameter an action accepts, and every result a query or action returns, is described by one `Value`. A `Value` is both a **schema fragment** (what `__SCHEMA__` reports) and a **validator** (what `request()` runs your data through).
+
+## Declaring a `Value`
+
+```cpp
+struct Params {
+  const char *name;
+  ValueType type;
+  bool required;
+  etl::optional<int> min;                       // only used by RANGE
+  etl::optional<int> max;                        // only used by RANGE
+  etl::optional<etl::span<const char *>> enumDefinition; // only used by ENUM
+};
+```
+
+```cpp
+Value brightness({
+  .name = "brightness",
+  .type = ValueType::RANGE,
+  .required = true,
+  .min = 0,
+  .max = 100,
+});
+
+const char *modes[] = { "auto", "manual", "off" };
+Value mode({
+  .name = "mode",
+  .type = ValueType::ENUM,
+  .required = false,
+  .enumDefinition = etl::span<const char *>(modes),
+});
+```
+
+## The eight `ValueType`s
+
+| Type | JSON representation | Extra validation |
+|---|---|---|
+| `INT` | JSON number (integer) | — |
+| `RANGE` | JSON number (integer) | Must fall within `[min, max]` |
+| `FLOAT` | JSON number (float) | — |
+| `DOUBLE` | JSON number (float) | — |
+| `BOOL` | JSON boolean | — |
+| `STRING` | JSON string | — |
+| `ENUM` | JSON string | Must exactly match one entry in `enumDefinition` |
+| `COLOR` | JSON string | Must match `#RRGGBB` — exactly 7 characters, leading `#`, and 6 valid hex digits (case-insensitive) |
+
+`ValueType::to_string()` returns the same names above (`"INT"`, `"RANGE"`, …) and is what appears in the `type` field of every schema entry.
+
+## `required` vs. optional fields
+
+- If a field is **missing** from the incoming JSON and `required` is `false`, `validateParameter` succeeds without producing a value (the corresponding `HandlerValue` stays empty — check `.has_value()` in your handler before reading it).
+- If a field is **missing** and `required` is `true`, validation fails and the request is rejected with `INVALID_PARAMETERS` (or, for a query/action *result* a handler forgot to fill in, `INVALID_RESULTS`/`INVALID_PARAMETERS` — see [Device](./device#error-code-inconsistency) for a current inconsistency in which code is used where).
+- If a field is **present** but the JSON type doesn't match the declared `ValueType`, validation fails regardless of `required`.
+
+## Validating incoming parameters
+
+```cpp
+bool validateParameter(ArduinoJson::JsonObject &jsonValues, HandlerValue &handlerValue);
+```
+
+Called once per declared parameter, in declaration order, against the request's `parameters` object. On success, `handlerValue` is populated (or left empty for a missing optional field) and your action handler reads it back out of the array `request()` passed in.
+
+## Validating outgoing results
+
+```cpp
+bool validateResult(HandlerValue &handlerValue, ArduinoJson::JsonObject &jsonValues);
+```
+
+Called once per declared result, in declaration order, after your handler runs. Reads the value your handler placed in `handlerValue`, re-checks its type (and range/enum membership), and writes it into the response's `results` object under the declared `name`. Same `required` rule as above: an empty, non-required result is simply omitted from the output.
+
+## Reading/writing values in a handler
+
+`HandlerValue` is `etl::optional<etl::variant<int, float, double, bool, const char *>>`. `STRING`, `ENUM`, and `COLOR` all use the `const char *` alternative — there's no dedicated variant slot per string-shaped type.
+
+```cpp
+// Reading an incoming parameter
+if (parameters[0].has_value()) {
+  auto hex = etl::get<const char *>(parameters[0].value());
+}
+
+// Writing an outgoing result
+results[0].emplace(true);        // BOOL
+results[1].emplace(21.4f);       // FLOAT
+results[2].emplace("#FF8800");   // STRING / ENUM / COLOR
+```
+
+## Serialized shape (schema)
+
+Every `Value` serializes itself into the schema output as:
+
+```json
+{ "name": "brightness", "type": "RANGE", "required": true, "min": 0, "max": 100 }
+```
+
+or, for an `ENUM`:
+
+```json
+{ "name": "mode", "type": "ENUM", "required": false, "enumDefinition": ["auto", "manual", "off"] }
+```
+
+`min`/`max` only appear for `RANGE`, and `enumDefinition` only appears for `ENUM` — every other type serializes just `name`, `type`, and `required`.
+
+Next: [Queries & Actions](./queries-and-actions).

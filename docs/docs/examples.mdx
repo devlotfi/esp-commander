@@ -1,0 +1,152 @@
+---
+title: Examples
+sidebar_position: 4
+---
+
+# Examples
+
+## 1. An always-on device over any request/response transport
+
+```cpp
+#include "EspCommander.h"
+using namespace EspCommander;
+
+bool relayOn = false;
+
+void relayStateHandler(HandlerValue results[], etl::optional<const char *> &error) {
+  results[0].emplace(relayOn);
+}
+
+void setRelayHandler(HandlerValue parameters[], HandlerValue results[], etl::optional<const char *> &error) {
+  relayOn = etl::get<bool>(parameters[0].value());
+  digitalWrite(RELAY_PIN, relayOn ? HIGH : LOW);
+  results[0].emplace(relayOn);
+}
+
+Value relayStateResult({.name = "on", .type = ValueType::BOOL, .required = true});
+Value relayStateResults[] = { relayStateResult };
+Query relayStateQuery({.name = "relayState", .results = relayStateResults, .handler = relayStateHandler});
+
+Value onParam({.name = "on", .type = ValueType::BOOL, .required = true});
+Value setRelayParams[] = { onParam };
+Value onResult({.name = "on", .type = ValueType::BOOL, .required = true});
+Value setRelayResults[] = { onResult };
+Action setRelayAction({.name = "setRelay", .parameters = setRelayParams, .results = setRelayResults, .handler = setRelayHandler});
+
+uint8_t reqBuf[ESP_COMMANDER_JSON_BUFFER_SIZE];
+uint8_t resBuf[ESP_COMMANDER_JSON_BUFFER_SIZE];
+StaticBufferAllocator reqAlloc(reqBuf, sizeof(reqBuf));
+StaticBufferAllocator resAlloc(resBuf, sizeof(resBuf));
+
+Query queries[] = { relayStateQuery };
+Action actions[] = { setRelayAction };
+
+Device device({
+  .id = "relay-01",
+  .name = "Garage Relay",
+  .requestTopic = "devices/relay-01/request",
+  .responseTopic = "devices/relay-01/response",
+  .queries = queries,
+  .actions = actions,
+  .requestAllocator = reqAlloc,
+  .responseAllocator = resAlloc,
+});
+
+char responseJson[ESP_COMMANDER_JSON_BUFFER_SIZE];
+
+// Called by your MQTT/HTTP/whatever library when a request arrives:
+void onRequestReceived(const char *requestJson) {
+  device.request(requestJson, responseJson, sizeof(responseJson));
+  publishToResponseTopic(device.responseTopic, responseJson);
+}
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(RELAY_PIN, OUTPUT);
+
+  char discoveryJson[256];
+  device.discovery(discoveryJson, sizeof(discoveryJson));
+  publishDiscovery(discoveryJson); // your own transport code
+}
+```
+
+## 2. A sleepy sensor over the ESP-NOW MQTT Gateway
+
+This combines `SleepyDevice` with the [ESP-NOW MQTT Gateway peer library](/docs/esp-now-mqtt-gateway/intro), which provides the mandatory store-and-forward behavior sleepy actions/queries depend on.
+
+```cpp
+#include "EspCommander.h"
+#include "EspNowMqttGateway.h"
+
+using namespace EspCommander;
+using namespace EspNowMqttGateway;
+
+float soilMoisture = 42.0f;
+
+void moistureHandler(HandlerValue results[], etl::optional<const char *> &error) {
+  results[0].emplace(soilMoisture);
+}
+
+void setIntervalHandler(HandlerValue parameters[], etl::optional<const char *> &error) {
+  int minutes = etl::get<int>(parameters[0].value());
+  saveWakeIntervalMinutes(minutes); // persisted to NVS/RTC memory, your own code
+}
+
+Value moistureResult({.name = "percent", .type = ValueType::FLOAT, .required = true});
+Value moistureResults[] = { moistureResult };
+SleepyQuery moistureQuery({.results = moistureResults, .handler = moistureHandler});
+
+Value intervalParam({.name = "minutes", .type = ValueType::RANGE, .required = true, .min = 1, .max = 1440});
+Value intervalParams[] = { intervalParam };
+SleepyAction setIntervalAction({.name = "setInterval", .parameters = intervalParams, .handler = setIntervalHandler});
+
+uint8_t jsonBuf[ESP_COMMANDER_JSON_BUFFER_SIZE];
+StaticBufferAllocator jsonAlloc(jsonBuf, sizeof(jsonBuf));
+
+SleepyAction sleepyActions[] = { setIntervalAction };
+SleepyDevice sleepyDevice({
+  .query = moistureQuery,
+  .actions = sleepyActions,
+  .jsonAllocator = jsonAlloc,
+});
+
+void onGatewayCommand(const char *commandJson) {
+  sleepyDevice.action(commandJson); // fire-and-forget, no response expected
+}
+
+void onGatewayMessage(const char *topic, const char *text) {}
+
+void setup() {
+  Serial.begin(115200);
+
+  PeerConfig config = {
+    .pmk = "00112233445566778899aabbccddeeff",
+    .lmk = "ffeeddccbbaa99887766554433221100",
+    .gatewayMac = "AA:BB:CC:DD:EE:FF",
+    .peerMac = "11:22:33:44:55:03",
+    .channel = 6,
+    .handleRecieve = onGatewayMessage,
+    .handleCommand = onGatewayCommand,
+  };
+  Peer::init(config);
+
+  char dataJson[ESP_COMMANDER_JSON_BUFFER_SIZE];
+  sleepyDevice.data(dataJson, sizeof(dataJson));
+  Peer::sleepyDataMessage(dataJson);   // push this wake's data + schema
+  Peer::sleepyCommandMessage();        // poll for a pending command
+
+  unsigned long start = millis();
+  while (millis() - start < 3000) {
+    delay(10); // give the gateway's reply a moment to arrive via onGatewayCommand
+  }
+
+  esp_sleep_enable_timer_wakeup(15ULL * 60 * 1000000);
+  esp_deep_sleep_start();
+}
+
+void loop() {
+  // Never reached — the device deep-sleeps at the end of setup().
+}
+```
+
+Next: [Troubleshooting](./troubleshooting).

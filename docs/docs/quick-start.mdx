@@ -1,0 +1,111 @@
+---
+title: Quick Start
+sidebar_position: 3
+---
+
+# Quick Start
+
+This builds a device with one query (`temperature`) and one action (`setLedColor`), and shows how to feed it a request string from whatever transport you're using.
+
+## 1. Declare your handlers
+
+Handlers are plain function pointers. A query handler fills in `results`; an action handler reads `parameters` and fills in `results`. Both can report an error instead of a result.
+
+```cpp
+#include "EspCommander.h"
+using namespace EspCommander;
+
+float currentTempC = 21.4f;
+char ledColor[8] = "#000000";
+
+void temperatureHandler(HandlerValue results[], etl::optional<const char *> &error) {
+  results[0].emplace(currentTempC); // must match the declared result order below
+}
+
+void setLedColorHandler(HandlerValue parameters[], HandlerValue results[], etl::optional<const char *> &error) {
+  auto hex = etl::get<const char *>(parameters[0].value());
+  strlcpy(ledColor, hex, sizeof(ledColor));
+  results[0].emplace(true);
+}
+```
+
+## 2. Describe the fields, query, and action
+
+```cpp
+Value temperatureResult({.name = "celsius", .type = ValueType::FLOAT, .required = true});
+Value temperatureResults[] = { temperatureResult };
+
+Query temperatureQuery({
+  .name = "temperature",
+  .results = temperatureResults,
+  .handler = temperatureHandler,
+});
+
+Value colorParam({.name = "hex", .type = ValueType::COLOR, .required = true});
+Value colorParams[] = { colorParam };
+
+Value appliedResult({.name = "applied", .type = ValueType::BOOL, .required = true});
+Value appliedResults[] = { appliedResult };
+
+Action setLedColorAction({
+  .name = "setLedColor",
+  .parameters = colorParams,
+  .results = appliedResults,
+  .handler = setLedColorHandler,
+});
+```
+
+## 3. Wire up the device
+
+Every `Device` needs its own request/response `ArduinoJson::Allocator`. `StaticBufferAllocator` gives you one backed by a plain byte array — no heap involved.
+
+```cpp
+uint8_t requestBuffer[ESP_COMMANDER_JSON_BUFFER_SIZE];
+uint8_t responseBuffer[ESP_COMMANDER_JSON_BUFFER_SIZE];
+StaticBufferAllocator requestAllocator(requestBuffer, sizeof(requestBuffer));
+StaticBufferAllocator responseAllocator(responseBuffer, sizeof(responseBuffer));
+
+Query queries[] = { temperatureQuery };
+Action actions[] = { setLedColorAction };
+
+Device device({
+  .id = "living-room-sensor-01",
+  .name = "Living Room Sensor",
+  .requestTopic = "devices/living-room-sensor-01/request",
+  .responseTopic = "devices/living-room-sensor-01/response",
+  .queries = queries,
+  .actions = actions,
+  .requestAllocator = requestAllocator,
+  .responseAllocator = responseAllocator,
+});
+```
+
+## 4. Feed it requests from your transport
+
+```cpp
+char responseJson[ESP_COMMANDER_JSON_BUFFER_SIZE];
+
+void onTransportMessage(const char *requestJson) {
+  device.request(requestJson, responseJson, sizeof(responseJson));
+  publishResponse(device.responseTopic, responseJson); // your own transport code
+}
+```
+
+That's it — `device.request()` parses the JSON, matches it to `temperature` or `setLedColor` (or the reserved schema query, see below), validates types, calls your handler, validates the results, and serializes the response.
+
+## 5. Try it
+
+```
+--> {"requestId":"r1","query":"temperature"}
+<-- {"requestId":"r1","status":"OK","results":{"celsius":21.4}}
+
+--> {"requestId":"r2","action":"setLedColor","parameters":{"hex":"#FF8800"}}
+<-- {"requestId":"r2","status":"OK","results":{"applied":true}}
+
+--> {"requestId":"r3","query":"__SCHEMA__"}
+<-- {"requestId":"r3","status":"OK","results":{"queries":[...],"actions":[...]}}
+```
+
+The last one is free — every `Device` responds to the reserved `__SCHEMA__` query automatically, describing every registered query and action. See [Device](./core-concepts/device) for the full protocol and [Values & Types](./core-concepts/values-and-types) for every field type.
+
+If your device is battery-powered and sleeps between wakes, this request/response model doesn't apply — go to [Sleepy Devices](./core-concepts/sleepy-devices) instead.

@@ -1,0 +1,96 @@
+---
+title: Sleepy Devices & the Gateway Requirement
+sidebar_position: 5
+---
+
+# Sleepy Devices & the Gateway Requirement
+
+`SleepyDevice`, `SleepyQuery`, and `SleepyAction` exist for hardware that spends almost all of its life asleep: a battery-powered sensor that wakes up every few minutes, reports something, and goes straight back to sleep.
+
+## Why this can't use the `Device` request/response model
+
+`Device::request()` assumes the device is awake and listening *at the moment a request arrives*, so it can validate, run a handler, and reply. A deep-sleeping node is unreachable for the vast majority of its life — nothing can "send it a request" while it's asleep, and it can't wait around for one to arrive without burning the battery it's trying to save.
+
+So the sleepy protocol flips the model:
+
+1. **On every wake, the device pushes its data unprompted** — there's no incoming query to answer, so `SleepyDevice::data()` produces a JSON blob combining its (one) query's current values *and* a description of what actions are available, since this may be the only chance anyone gets to learn that.
+2. **The device then polls, once, for a single pending command** — instead of listening indefinitely, it asks "do you have anything for me?", waits briefly, and either gets a command to run via `SleepyDevice::action()` or gets nothing and goes back to sleep.
+
+## Why a gateway is mandatory
+
+Because the device is not reachable in real time, **something else has to hold onto outbound commands until the device wakes up and asks for them.** This is exactly the store-and-forward role a gateway like [esp-now-mqtt-gateway](/docs/esp-now-mqtt-gateway/intro) plays:
+
+- The gateway receives the device's `data()` push (over ESP-NOW, in that library's case) and forwards it upstream (e.g. to MQTT), and separately keeps a queue of any command that arrives *for that device* while it's asleep.
+- When the device wakes and polls, the gateway hands back whatever command is queued (or nothing).
+
+Without a gateway sitting between the sleepy device and the rest of your system, there is no mechanism at all for delivering a command to a device that isn't listening when the command is issued — the command would simply have nowhere to wait. This is why using `SleepyAction`/`SleepyQuery` **requires** a gateway with this queue-and-poll semantics; `Device`'s plain request/response model has no such requirement because the device is assumed reachable on demand.
+
+:::info Mapping onto esp-now-mqtt-gateway
+If you're using the [ESP-NOW MQTT Gateway peer library](/docs/esp-now-mqtt-gateway/intro) as your transport, the mapping is direct:
+- `SleepyDevice::data()` output → `Peer::sleepyDataMessage(text)`
+- Poll for a command → `Peer::sleepyCommandMessage()`
+- The gateway's reply → your `handleCommand` callback → `SleepyDevice::action(text)`
+
+Any other transport that implements the same "queue a command until the device asks for it" behavior works equally well — the gateway requirement is about the *semantics*, not that specific library.
+:::
+
+## `SleepyQuery` — at most one, unnamed
+
+```cpp
+struct Params {
+  etl::span<Value> results;
+  QueryHandler handler;
+};
+```
+
+Unlike `Query`, a `SleepyQuery` has **no name** — a sleepy device can only ever report one implicit "current readings" query, because there's no on-demand mechanism to ask it for a *specific* one by name. `SleepyDevice::Params::query` is an `etl::optional<SleepyQuery>` — a device with nothing to report can simply omit it.
+
+## `SleepyAction` — same shape, no results
+
+```cpp
+struct Params {
+  const char *name;
+  etl::span<Value> parameters;
+  SleepyActionHandler handler;
+};
+
+using SleepyActionHandler = void (*)(HandlerValue parameters[], etl::optional<const char *> &error);
+```
+
+A `SleepyAction` takes parameters like a regular `Action`, but produces **no results** — there's no response channel for a sleepy device to send them back on. The handler either succeeds silently or sets `error` (which is only ever logged locally, not delivered anywhere — see [Troubleshooting](../troubleshooting)).
+
+## `SleepyDevice::data()` — the wake-up push
+
+```cpp
+void data(char *jsonStringData, size_t jsonStringDataSize);
+```
+
+Produces:
+
+```json
+{
+  "query": { "results": [{"name":"celsius","type":"FLOAT","required":true}] },
+  "results": { "celsius": 21.4 },
+  "actions": [
+    { "name": "setThreshold", "parameters": [{"name":"celsius","type":"FLOAT","required":true}] }
+  ]
+}
+```
+
+Note the split: `"query"` is the **schema** of the implicit query (field descriptions only, no values), `"results"` is the **actual data**, and `"actions"` is the schema of every registered `SleepyAction` — the same schema+data blending happens on every single wake, since there's no separate on-demand schema call for sleepy devices.
+
+If the query handler sets `error`, or a result fails validation, `data()` returns **without writing anything** to `jsonStringData` — treat an unchanged/empty buffer as "this wake produced no data" in your transport code.
+
+## `SleepyDevice::action()` — the one-shot command
+
+```cpp
+void action(const char *jsonStringAction);
+```
+
+```json
+{ "action": "setThreshold", "parameters": { "celsius": 25.0 } }
+```
+
+No `requestId`, no response — this is fire-and-forget by design, matching the reality that the device may go straight back to sleep the instant the handler returns. Validation failures (bad JSON, unknown action name, bad parameters) are only logged, never reported back to whatever sent the command.
+
+Next: [Memory Management](./memory-management).

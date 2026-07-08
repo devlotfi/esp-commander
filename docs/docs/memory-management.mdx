@@ -1,0 +1,46 @@
+---
+title: Memory Management
+sidebar_position: 6
+---
+
+# Memory Management (`StaticBufferAllocator`)
+
+Every `ArduinoJson::JsonDocument` EspCommander creates is backed by a custom `ArduinoJson::Allocator` — `StaticBufferAllocator` — instead of the heap, so parsing a request or building a response never fragments or exhausts general-purpose RAM.
+
+## How it works
+
+`StaticBufferAllocator` is a **bump/arena allocator** over a fixed buffer you provide:
+
+```cpp
+uint8_t buffer[ESP_COMMANDER_JSON_BUFFER_SIZE];
+StaticBufferAllocator allocator(buffer, sizeof(buffer));
+```
+
+- `allocate(size)` rounds `size` up to a 4-byte boundary, writes a small header recording the block size, and hands back a pointer just past that header — then advances an internal offset. There is no free list; it's purely "next available slot."
+- `deallocate(ptr)` is a **no-op**. Individual blocks are never reclaimed.
+- `reallocate(ptr, newSize)` always allocates a **new** block, copies `min(oldSize, newSize)` bytes into it, and returns the new pointer — it never grows in place. The old block's space is not reclaimed either.
+- `reset()` sets the internal offset back to zero, instantly invalidating every pointer previously handed out from this buffer.
+
+## The automatic-reset behavior
+
+This is the single most important thing to understand before using this allocator:
+
+:::danger allocate() resets the entire arena when it runs out of room
+If `allocate()` doesn't have enough remaining space for a request, it does **not** fail immediately. It calls `reset()` — wiping every previous allocation in that buffer back to offset zero — and retries the allocation once from a clean slate. Only if the buffer *still* can't fit the request (i.e. the single allocation is larger than the whole buffer) does `allocate()` return `nullptr`.
+:::
+
+In other words: running out of space doesn't behave like a normal allocator returning `nullptr` early — it silently discards everything allocated so far in that buffer and starts over. This is a deliberate simplification (it keeps the allocator trivial and guarantees forward progress for a single document), but it has real implications:
+
+- **Never share one `StaticBufferAllocator` between two `JsonDocument`s that need to stay valid at the same time.** `Device` correctly uses two separate allocators/buffers — `requestAllocator` for `requestDoc` and `responseAllocator` for `responseDoc` — specifically so that building the response can't silently wipe out the still-in-use request document (e.g. `parametersJson`, which is read from `requestDoc` throughout `request()`).
+- **Size your buffer for the worst case, not the average case**, since a mid-parse reset can produce a document that's missing data it should have had, without any error surfacing to your handler.
+- **Call `reset()` yourself between independent uses** of the same allocator/buffer if you want a clean, predictable start rather than relying on the implicit reset-on-overflow behavior.
+
+## Alignment
+
+All allocations round up to 4-byte alignment (`align()`), which the implementation notes is tuned for ESP32 internal RAM access patterns. This is fixed and not currently configurable.
+
+## Sizing `ESP_COMMANDER_JSON_BUFFER_SIZE`
+
+The default is 8192 bytes per buffer. Two buffers (request + response) means **16 KB** of static RAM reserved for a `Device` by default — halve `ESP_COMMANDER_JSON_BUFFER_SIZE` if your schema/payloads are small and RAM is tight, or raise it if you have many queries/actions with long names or large enum definitions (schema responses in particular can be large, since they describe every registered query and action at once). See [Config Reference](../api-reference/config).
+
+Next: [Config Reference](../api-reference/config).

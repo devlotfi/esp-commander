@@ -1,0 +1,58 @@
+---
+title: Installation
+sidebar_position: 2
+---
+
+# Installation
+
+EspCommander is header-only. There's nothing to compile as a separate library — you copy the headers in and include one umbrella file.
+
+## Files
+
+| File | Purpose |
+|---|---|
+| `Config.h` | Compile-time limits and the debug log macro, overridable before include |
+| `Types.h` | Handler function signatures, `ValueType`, `RequestType`, error/status string constants |
+| `Serializable.h` | The `serialize(JsonObject&)` interface shared by every describable type |
+| `Value.h` | The typed field descriptor + validator (`Value`) |
+| `Query.h` / `Action.h` | Named read/read-write operations for `Device` |
+| `SleepyQuery.h` / `SleepyAction.h` | Their counterparts for `SleepyDevice` |
+| `Device.h` | Request/response device: `discovery()`, `schema()`, `request()` |
+| `SleepyDevice.h` | Push/poll device: `data()`, `action()` |
+| `StaticBufferAllocator.h` | Fixed-buffer `ArduinoJson::Allocator` implementation |
+| `EspCommander.h` | Includes everything above, in the right order |
+
+## Dependencies
+
+Install these before adding EspCommander:
+
+- **[ArduinoJson](https://arduinojson.org/) v7.x** — required for `ArduinoJson::Allocator`, `ArduinoJson::JsonDocument(&allocator)`, and the rest of the v7 API surface used throughout.
+- **[ETL — Embedded Template Library](https://www.etlcpp.com/)** — required for `etl::span`, `etl::optional`, and `etl::variant`.
+
+Both are available as PlatformIO library dependencies (`ArduinoJson`, `etlcpp/Embedded Template Library`) or as Arduino Library Manager entries.
+
+## Adding the headers
+
+1. Copy the ten headers into your project (e.g. `lib/EspCommander/` in PlatformIO, or a folder alongside your sketch in the Arduino IDE).
+2. Include the umbrella header:
+
+```cpp
+#include "EspCommander.h"
+```
+
+This pulls in every other header transitively, in dependency order.
+
+## Overriding limits before including
+
+Every size/limit in `Config.h` other than the debug flag is guarded with `#ifndef`, so you can override it before including the library:
+
+```cpp
+#define ESP_COMMANDER_JSON_BUFFER_SIZE 4096
+#define ESP_COMMANDER_MAX_ACTIONS 4
+
+#include "EspCommander.h"
+```
+
+See [Config Reference](./api-reference/config) for the full list and what each limit controls.
+
+Next: [Quick Start](./quick-start).

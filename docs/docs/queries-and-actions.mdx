@@ -1,0 +1,103 @@
+---
+title: Queries & Actions
+sidebar_position: 3
+---
+
+# Queries & Actions
+
+`Query` and `Action` are the two operation shapes a `Device` can expose. Both are `Serializable` (they know how to describe themselves for the schema) and both wrap a plain function pointer that does the actual work.
+
+## `Query` — read-only
+
+```cpp
+struct Params {
+  const char *name;
+  etl::span<Value> results;
+  QueryHandler handler;
+};
+```
+
+```cpp
+using QueryHandler = void (*)(HandlerValue results[], etl::optional<const char *> &error);
+```
+
+A query has **no parameters** — only a name and a list of typed results. Your handler fills `results[i]` for each declared result, in the same order they were declared, or sets `error` to abort the request with a custom error code.
+
+```cpp
+void uptimeHandler(HandlerValue results[], etl::optional<const char *> &error) {
+  results[0].emplace((int)(millis() / 1000));
+}
+
+Value seconds({.name = "seconds", .type = ValueType::INT, .required = true});
+Value uptimeResults[] = { seconds };
+Query uptimeQuery({.name = "uptime", .results = uptimeResults, .handler = uptimeHandler});
+```
+
+## `Action` — parameters in, results out
+
+```cpp
+struct Params {
+  const char *name;
+  etl::span<Value> parameters;
+  etl::span<Value> results;
+  ActionHandler handler;
+};
+```
+
+```cpp
+using ActionHandler = void (*)(HandlerValue parameters[], HandlerValue results[], etl::optional<const char *> &error);
+```
+
+An action has both a parameter list and a result list. `Device::request()` validates every parameter against `parametersJson` **before** calling your handler — your handler only ever runs with already-type-checked, already-range-checked data.
+
+```cpp
+void rebootHandler(HandlerValue parameters[], HandlerValue results[], etl::optional<const char *> &error) {
+  auto delaySeconds = parameters[0].has_value() ? etl::get<int>(parameters[0].value()) : 0;
+  scheduleReboot(delaySeconds);
+  results[0].emplace(true);
+}
+
+Value delayParam({.name = "delaySeconds", .type = ValueType::INT, .required = false});
+Value delayParams[] = { delayParam };
+Value scheduled({.name = "scheduled", .type = ValueType::BOOL, .required = true});
+Value rebootResults[] = { scheduled };
+
+Action rebootAction({
+  .name = "reboot",
+  .parameters = delayParams,
+  .results = rebootResults,
+  .handler = rebootHandler,
+});
+```
+
+## Reporting an error from a handler
+
+Both handler signatures take `etl::optional<const char *> &error` as their last argument. Set it to abort the request with a specific code — `Device::request()` short-circuits immediately after your handler returns if `error.has_value()`, skipping result validation entirely and writing an error response instead:
+
+```cpp
+void setLedColorHandler(HandlerValue parameters[], HandlerValue results[], etl::optional<const char *> &error) {
+  if (!ledIsAvailable()) {
+    error = "LED_UNAVAILABLE";
+    return;
+  }
+  // ...
+}
+```
+
+The response becomes:
+
+```json
+{ "requestId": "r2", "status": "ERROR", "code": "LED_UNAVAILABLE" }
+```
+
+Any string literal works here — you aren't limited to the built-in `LibraryErrors` constants (`INVALID_JSON`, `INVALID_FORMAT`, `ACTION_NOT_FOUND`, `QUERY_NOT_FOUND`, `INVALID_PARAMETERS`, `INVALID_RESULTS`), which are reserved for errors the library itself detects.
+
+## Ordering matters, names don't have to be unique across queries/actions
+
+`Query`/`Action` are matched to an incoming request purely by linear search over the `Device`'s `queries`/`actions` spans, comparing `strcmp(item.name, requestedName) == 0`. A query and an action *can* share the same name (they're looked up in separate arrays, disambiguated by whether the request used `"query"` or `"action"`), but two queries — or two actions — sharing a name means only the first match is ever reachable.
+
+## `Value` array sizing vs. `Config.h` maximums
+
+`parameters`/`results` spans on `Query`/`Action` can be any length **you** choose when constructing them — but the `HandlerValue` arrays `Device::request()` allocates on the stack to shuttle data to/from your handler are fixed at `ESP_COMMANDER_MAX_PARAMETERS`/`ESP_COMMANDER_MAX_RESULTS` (default 8 each). If any single query/action declares more than that many results/parameters, the extra ones will read/write past the handler's usable range. Raise the relevant `Config.h` define if you need more than 8 of either — see [Config Reference](../api-reference/config).
+
+Next: [Device](./device).

@@ -1,0 +1,54 @@
+---
+title: Troubleshooting
+sidebar_position: 5
+---
+
+# Troubleshooting
+
+## My response buffer is empty / unchanged after a malformed request
+
+`Device::request()` only logs `INVALID_JSON` and returns — it does **not** write any error response when the input string fails to parse as JSON at all (as opposed to parsing fine but failing format validation, which *does* produce an `INVALID_FORMAT` response). If your transport expects a reply for every request, add your own timeout/fallback for "no response was produced," and don't assume `jsonStringResponse` was touched unless you check its contents.
+
+The same applies to `SleepyDevice::data()`: if the query handler sets `error`, or a declared result fails validation, `data()` returns without writing to `jsonStringData` at all.
+
+## `requestId` comes back as `null` in an error response
+
+This happens specifically when the request itself failed format validation (`INVALID_FORMAT`) — for example, `requestId` was missing or wasn't a JSON string in the first place. Since the library never validated a usable `requestId` in that case, it reports `null` rather than echoing back something it can't guarantee is safe to serialize. Every other error path (query/action not found, invalid parameters, handler error, invalid results) echoes back the real `requestId`, because format validation already confirmed it's a valid string by that point.
+
+## Error code inconsistency: `INVALID_PARAMETERS` from a query response
+
+When a **query**'s declared results fail `validateResult()`, the response currently reports `code: "INVALID_PARAMETERS"` rather than `INVALID_RESULTS` (actions correctly report `INVALID_RESULTS` in the equivalent situation). If you're branching client-side logic on error codes, treat `INVALID_PARAMETERS` on a *query* response as a result-validation failure — queries have no parameters, so it can't mean anything else. See [Device → outcome table](./core-concepts/device#full-outcome-table).
+
+## Some `SleepyDevice` error logs never appear on Serial
+
+Three call sites in `SleepyDevice.h` use `ESP_COMMANDER_DEBUG("...")` instead of `ESP_COMMANDER_LOG("...")`:
+
+- In `data()`, when the query handler sets an error, and when a query result fails validation.
+- In `action()`, when the action handler sets an error.
+
+`ESP_COMMANDER_DEBUG` is defined in `Config.h` as a plain feature flag (`#define ESP_COMMANDER_DEBUG` with no parameter list or replacement text) — it exists only to be tested with `#ifdef`. Calling it like a function, `ESP_COMMANDER_DEBUG("message")`, expands to just `("message");` — a harmless but silent discarded expression, not a `Serial.println`. In practice this means these three particular failure paths in `SleepyDevice` currently produce **no log output at all**, unlike every equivalent failure path in `Device`, which does use `ESP_COMMANDER_LOG` correctly. If you're debugging a sleepy action/query that seems to silently do nothing, this is worth checking first — add your own logging around the call into `data()`/`action()` until this is addressed.
+
+## An action/query with more than 8 parameters or results behaves strangely
+
+`ESP_COMMANDER_MAX_PARAMETERS` and `ESP_COMMANDER_MAX_RESULTS` (default `8` each) size the fixed `HandlerValue[]` stack arrays `Device::request()`, `SleepyDevice::data()`, and `SleepyDevice::action()` use to shuttle values to and from your handler. A `Query`/`Action`/`SleepyAction` declaring more parameters or results than these limits will have its extra entries read from or written to indices beyond what the handler array actually holds meaningful data for. Raise the relevant define in `Config.h` (see [Config Reference](./api-reference/config)) before including the library if you need larger operations.
+
+## An action request is rejected even though I didn't mean to pass parameters
+
+`validateFormat()` requires the `parameters` field to be present **and** a JSON object for every action request — even an action that takes zero parameters still needs `"parameters": {}` in the request. A request with `action` set but `parameters` entirely missing is rejected as `INVALID_FORMAT` before the library even looks up the action by name.
+
+## `StaticBufferAllocator` seems to lose earlier data mid-request
+
+See [Memory Management](./core-concepts/memory-management) — `StaticBufferAllocator::allocate()` silently resets its entire arena back to empty and retries once whenever it runs out of room, rather than failing immediately. This is expected behavior, not a bug, but it means:
+
+- Two `JsonDocument`s that need to coexist must use **separate** allocator instances with separate buffers (as `Device` does for `requestDoc`/`responseDoc`).
+- A buffer that's marginally too small for its workload can appear to work most of the time and then produce a document missing data it should have had, with no error surfaced, whenever an allocation happens to land right at the reset threshold.
+
+If you see intermittent, hard-to-reproduce missing fields in a request or response, increase `ESP_COMMANDER_JSON_BUFFER_SIZE` (or the specific buffer size you passed to `StaticBufferAllocator`) before looking elsewhere.
+
+## Two queries/actions never both run — only the first-named one responds
+
+Lookup in both `Device` and `SleepyDevice` is a linear `strcmp` scan over the relevant span, stopping at the first match. If two entries in the same `queries`/`actions`/`(sleepy)actions` array share a `name`, only the first one is ever reachable. Keep names unique within each array (a `Query` and an `Action` *can* safely share a name, since they're looked up in separate arrays disambiguated by the request's `"query"`/`"action"` key).
+
+## My sleepy device's command never arrives
+
+Remember that `SleepyAction`/`SleepyQuery` fundamentally require a gateway implementing store-and-forward delivery — see [Sleepy Devices & the Gateway Requirement](./core-concepts/sleepy-devices). If you're not running a compatible gateway (or your poll happens before the command was actually queued upstream), there's no mechanism for the command to reach the device at all; this isn't something `SleepyDevice` itself can detect or report.

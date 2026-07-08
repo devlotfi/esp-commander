@@ -1,0 +1,153 @@
+---
+title: Device
+sidebar_position: 4
+---
+
+# `Device`
+
+`Device` is the request/response half of the library — for hardware that's reachable at any time and can answer a request as soon as it arrives.
+
+## Constructing a `Device`
+
+```cpp
+struct Params {
+  const char *id;
+  const char *name;
+  const char *requestTopic;
+  const char *responseTopic;
+  etl::span<Query> queries;
+  etl::span<Action> actions;
+  ArduinoJson::Allocator &requestAllocator;
+  ArduinoJson::Allocator &responseAllocator;
+};
+```
+
+`requestTopic`/`responseTopic` are plain strings the library never interprets — they exist purely so your transport code (and anything consuming `discovery()`) knows where to send requests and where to expect responses. Nothing stops you from leaving them empty if your transport doesn't need named topics (e.g. a single bidirectional serial link).
+
+`requestAllocator`/`responseAllocator` should normally be two **separate** `StaticBufferAllocator` instances — see [Memory Management](./memory-management) for why sharing one between concurrently-live documents is unsafe.
+
+## `discovery()`
+
+```cpp
+void discovery(char *jsonStringResponse, size_t jsonStringResponseSize);
+```
+
+Serializes just the device's identity — not its schema:
+
+```json
+{
+  "id": "living-room-sensor-01",
+  "name": "Living Room Sensor",
+  "requestTopic": "...",
+  "responseTopic": "..."
+}
+```
+
+Typically published once (e.g. on boot, or periodically) to a well-known discovery topic so whatever's consuming your devices knows this one exists and where to talk to it. Call `schema()` (or send a `__SCHEMA__` query) to learn what it can actually do.
+
+## `schema()`
+
+```cpp
+void schema(const char *requestId, ArduinoJson::JsonDocument &responseDoc, char *jsonStringResponse, size_t jsonStringResponseSize);
+```
+
+Serializes every registered query and action, each via its own `serialize()`:
+
+```json
+{
+  "requestId": "r3",
+  "status": "OK",
+  "results": {
+    "queries": [
+      {
+        "name": "temperature",
+        "results": [{ "name": "celsius", "type": "FLOAT", "required": true }]
+      }
+    ],
+    "actions": [
+      {
+        "name": "setLedColor",
+        "parameters": [{ "name": "hex", "type": "COLOR", "required": true }],
+        "results": [{ "name": "applied", "type": "BOOL", "required": true }]
+      }
+    ]
+  }
+}
+```
+
+You rarely call this directly — `request()` calls it for you whenever the incoming query name matches the reserved schema query name (`ESP_COMMANDER_SCHEMA_QUERY`, `"__SCHEMA__"` by default).
+
+## `request()` — the main entry point
+
+```cpp
+void request(const char *jsonStringRequest, char *jsonStringResponse, size_t jsonStringResponseSize);
+```
+
+### Request format
+
+```json
+{ "requestId": "<string>", "query": "<name>" }
+```
+
+or
+
+```json
+{ "requestId": "<string>", "action": "<name>", "parameters": { ... } }
+```
+
+Rules enforced by `validateFormat()`:
+
+- `requestId` must be present and a JSON string.
+- Exactly one of `query` / `action` must be present — both or neither is a format error.
+- For `action`, `parameters` must be present and a JSON object (even `{}` if the action takes no parameters — an action request with `parameters` entirely missing is rejected as a format error, not treated as "no parameters").
+- For `query`, `parameters` is ignored if present.
+
+### Response format
+
+Success:
+
+```json
+{ "requestId": "<echoed>", "status": "OK", "results": { ... } }
+```
+
+Error:
+
+```json
+{
+  "requestId": "<echoed, or null — see below>",
+  "status": "ERROR",
+  "code": "<error string>"
+}
+```
+
+### Full outcome table
+
+| Condition                                                                     | Result                                                                                                                                                                                        |
+| ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Input isn't valid JSON                                                        | Logs `INVALID_JSON`, **writes nothing to `jsonStringResponse`** — see [Troubleshooting](../troubleshooting)                                                                                   |
+| `requestId` missing/not-a-string, or both/neither of `query`/`action` present | `{"requestId": null, "status": "ERROR", "code": "INVALID_FORMAT"}` — `requestId` is reported as `null` here because the library can't safely echo back a value it never validated as a string |
+| `query == "__SCHEMA__"`                                                       | Full schema response (see above)                                                                                                                                                              |
+| `query` doesn't match any registered `Query`                                  | `QUERY_NOT_FOUND`                                                                                                                                                                             |
+| `action` doesn't match any registered `Action`                                | `ACTION_NOT_FOUND`                                                                                                                                                                            |
+| A declared action parameter fails validation                                  | `INVALID_PARAMETERS`                                                                                                                                                                          |
+| Your query/action handler sets `error`                                        | Whatever string you set it to                                                                                                                                                                 |
+| A declared query result fails validation                                      | `INVALID_PARAMETERS` — see the inconsistency note below                                                                                                                                       |
+| A declared action result fails validation                                     | `INVALID_RESULTS`                                                                                                                                                                             |
+| Everything validates                                                          | `{"requestId": ..., "status": "OK", "results": {...}}`                                                                                                                                        |
+
+:::caution Error code inconsistency between queries and actions
+When a **query**'s result fails `validateResult()`, the current implementation reports `INVALID_PARAMETERS` — the same code used for a bad incoming action parameter — rather than `INVALID_RESULTS`. Actions correctly report `INVALID_RESULTS` in the equivalent situation. If you're writing a client that branches on error codes, treat `INVALID_PARAMETERS` from a query response as "one of this query's results failed to validate," not as a parameter problem (queries don't take parameters at all).
+:::
+
+## Handler execution order (per request)
+
+1. Parse JSON.
+2. Validate request format.
+3. Look up the query/action by name.
+4. **(Action only)** Validate every declared parameter against the incoming `parameters` object, in declaration order. First failure aborts with `INVALID_PARAMETERS`.
+5. Call your handler.
+6. If your handler set `error`, abort with that code — no result validation happens.
+7. Validate every declared result the handler produced, in declaration order. First failure aborts.
+8. Serialize the success response.
+
+Next: [Sleepy Devices](./sleepy-devices).

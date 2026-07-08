@@ -1,0 +1,68 @@
+---
+title: Types Reference
+sidebar_position: 2
+---
+
+# Types Reference (`Types.h`)
+
+## `HandlerValue`
+
+```cpp
+using HandlerValue = etl::optional<etl::variant<int, float, double, bool, const char *>>;
+```
+
+The universal container every parameter and result passes through. `etl::optional` models "present or absent" (used for non-`required` fields, or a handler choosing not to produce an optional result); `etl::variant` models "one of these five underlying C++ types," with `const char *` covering `STRING`, `ENUM`, and `COLOR` alike.
+
+## Handler signatures
+
+```cpp
+using QueryHandler = void (*)(HandlerValue results[], etl::optional<const char *> &error);
+using ActionHandler = void (*)(HandlerValue parameters[], HandlerValue results[], etl::optional<const char *> &error);
+using SleepyActionHandler = void (*)(HandlerValue parameters[], etl::optional<const char *> &error);
+```
+
+All three are plain function pointers (not `std::function`), so they carry no capture state — share state with your handlers via globals, statics, or a captured device/context object reached through those.
+
+## `ValueType`
+
+```cpp
+enum ValueTypeEnum { INT, RANGE, FLOAT, DOUBLE, BOOL, STRING, ENUM, COLOR };
+```
+
+`ValueType` wraps this enum in a small class with an implicit conversion back to the raw enum, a deleted `bool` conversion (so `if (value)` can't accidentally compile against the wrong thing), and `to_string()` returning the matching uppercase name. See [Values & Types](../core-concepts/values-and-types) for what each type validates.
+
+## `RequestType`
+
+```cpp
+enum RequestType { QUERY, ACTION };
+```
+
+Set by `Device::validateFormat()` to indicate which branch of `request()` to run; not otherwise part of the public wire format.
+
+## `LibraryErrors`
+
+```cpp
+class LibraryErrors {
+public:
+  static constexpr const char *INVALID_JSON = "INVALID_JSON";
+  static constexpr const char *INVALID_FORMAT = "INVALID_FORMAT";
+  static constexpr const char *ACTION_NOT_FOUND = "ACTION_NOT_FOUND";
+  static constexpr const char *QUERY_NOT_FOUND = "QUERY_NOT_FOUND";
+  static constexpr const char *INVALID_PARAMETERS = "INVALID_PARAMETERS";
+  static constexpr const char *INVALID_RESULTS = "INVALID_RESULTS";
+};
+```
+
+The complete set of error codes the library itself can produce in a response's `"code"` field. Your own handlers can set `error` to any string you like — these constants are just what `Device`/`SleepyDevice` use internally. See [Device → outcome table](../core-concepts/device#full-outcome-table) for exactly when each fires, including the known `INVALID_PARAMETERS`/`INVALID_RESULTS` inconsistency on the query path.
+
+## `ResponseStatus`
+
+```cpp
+class ResponseStatus {
+public:
+  static constexpr const char *OK = "OK";
+  static constexpr const char *ERROR = "ERROR";
+};
+```
+
+The two possible values of a response's `"status"` field.
