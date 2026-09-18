@@ -46,6 +46,7 @@ An app to controll IOT devices using MQTT
 
 <p float="left">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/arduino.svg">
+  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/arduino-json.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/espressif.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/mqtt.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/esp-now-mqtt-gateway.svg">
