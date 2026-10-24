@@ -9,9 +9,11 @@ import {
   Label,
   ListBox,
   Modal,
+  parseColor,
   Select,
   Slider,
   Switch,
+  type Color,
   type UseOverlayStateReturn,
 } from "@heroui/react";
 import {
@@ -19,6 +21,8 @@ import {
   type HandlerData,
   type ESPCommanderAction,
   type Value,
+  type FormikHandlerData,
+  type AllowedTypes,
 } from "../../types/handler-call";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -27,9 +31,9 @@ import { DynamicIcon } from "lucide-react/dynamic";
 import { useTranslation } from "react-i18next";
 import { Play } from "lucide-react";
 
-function setupInitialValues(action: ESPCommanderAction): HandlerData {
+function setupInitialValues(action: ESPCommanderAction): FormikHandlerData {
   if (!action.parameters) return {};
-  const actionData: HandlerData = {};
+  const actionData: FormikHandlerData = {};
   for (const parameter of action.parameters) {
     switch (parameter.type) {
       case ValueType.INT:
@@ -54,7 +58,7 @@ function setupInitialValues(action: ESPCommanderAction): HandlerData {
         actionData[parameter.name] = "";
         break;
       case ValueType.COLOR:
-        actionData[parameter.name] = "#ffffff";
+        actionData[parameter.name] = parseColor("#ffffff");
         break;
     }
   }
@@ -100,7 +104,6 @@ function setupYupSchema(action: ESPCommanderAction) {
         }
         break;
       case ValueType.COLOR:
-        schema = yup.string();
         break;
     }
 
@@ -137,7 +140,17 @@ export default function ActionParamsModal({
     initialValues: setupInitialValues(action),
     validationSchema: setupYupSchema(action),
     onSubmit(values) {
-      onSubmit(values);
+      const handlerData: HandlerData = {};
+      for (const key of Object.keys(values)) {
+        //@ts-ignore
+        if (values[key]["getChannelValue"]) {
+          const color = values[key] as Color;
+          handlerData[key] = color.toString("hex");
+        } else {
+          handlerData[key] = values[key] as AllowedTypes;
+        }
+      }
+      onSubmit(handlerData);
     },
   });
 
@@ -218,12 +231,12 @@ export default function ActionParamsModal({
               isSelected={formik.values[parameter.name] as boolean}
               onChange={(value) => formik.setFieldValue(parameter.name, value)}
             >
-              <Switch.Control>
-                <Switch.Thumb />
-              </Switch.Control>
-              <Label className="text-sm">
+              <Switch.Content>
+                <Switch.Control>
+                  <Switch.Thumb />
+                </Switch.Control>
                 <FieldLabel parameter={parameter}></FieldLabel>
-              </Label>
+              </Switch.Content>
             </Switch>
           );
         case ValueType.STRING:
@@ -287,7 +300,10 @@ export default function ActionParamsModal({
               aria-label="color"
               value={formik.values[parameter.name] as string}
               onChange={(value) =>
-                formik.setFieldValue(parameter.name, value?.toString("hex"))
+                formik.setFieldValue(
+                  parameter.name,
+                  value || parseColor("#ffffff"),
+                )
               }
             >
               <FieldLabel parameter={parameter}></FieldLabel>
@@ -296,10 +312,7 @@ export default function ActionParamsModal({
                   <ColorPicker
                     value={formik.values[parameter.name] as string}
                     onChange={(value) =>
-                      formik.setFieldValue(
-                        parameter.name,
-                        value?.toString("hex"),
-                      )
+                      formik.setFieldValue(parameter.name, value)
                     }
                   >
                     <ColorPicker.Trigger>

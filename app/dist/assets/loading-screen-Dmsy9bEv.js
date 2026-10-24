@@ -1,0 +1,1 @@
+import{I as e,d as t}from"./heroui-CoRRbPok.js";var n=e();function r(){return(0,n.jsx)(`div`,{className:`flex flex-1 flex-col justify-center items-center`,children:(0,n.jsx)(t,{color:`accent`,size:`lg`})})}export{r as t};

@@ -1,7 +1,6 @@
 import {
   Button,
   Form,
-  Label,
   Modal,
   Switch,
   type UseOverlayStateReturn,
@@ -156,10 +155,12 @@ export default function EditConnectionModal({
                     isSelected={formik.values.useAuth}
                     onChange={(value) => formik.setFieldValue("useAuth", value)}
                   >
-                    <Switch.Control>
-                      <Switch.Thumb />
-                    </Switch.Control>
-                    <Label className="text-sm">{t("useAuthenthication")}</Label>
+                    <Switch.Content>
+                      <Switch.Control>
+                        <Switch.Thumb />
+                      </Switch.Control>
+                      {t("useAuthenthication")}
+                    </Switch.Content>
                   </Switch>
                   {formik.values.useAuth ? (
                     <>
@@ -210,12 +211,12 @@ export default function EditConnectionModal({
                       formik.setFieldValue("useSleepyDeviceDiscovery", value)
                     }
                   >
-                    <Switch.Control>
-                      <Switch.Thumb />
-                    </Switch.Control>
-                    <Label className="text-sm">
+                    <Switch.Content>
+                      <Switch.Control>
+                        <Switch.Thumb />
+                      </Switch.Control>
                       {t("useSleepyDeviceDiscovery")}
-                    </Label>
+                    </Switch.Content>
                   </Switch>
                   {formik.values.useSleepyDeviceDiscovery ? (
                     <>

@@ -1,3 +1,5 @@
+import type { Color } from "@heroui/react";
+
 export enum KnownErrors {
   INVALID_JSON = "INVALID_JSON",
   INVALID_FORMAT = "INVALID_FORMAT",
@@ -56,6 +58,12 @@ export type AllowedTypes = number | boolean | string;
 
 export interface HandlerData {
   [key: string]: AllowedTypes;
+}
+
+export type FormikAllowedTypes = AllowedTypes | Color;
+
+export interface FormikHandlerData {
+  [key: string]: FormikAllowedTypes;
 }
 
 export interface QueryRequest {

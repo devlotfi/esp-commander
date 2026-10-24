@@ -9,33 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SleepyDeviceRouteImport } from './routes/sleepy-device'
-import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as DeviceRouteImport } from './routes/device'
-import { Route as ConnectionsRouteImport } from './routes/connections'
-import { Route as AiRouteRouteImport } from './routes/ai/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AiRouteRouteImport } from './routes/ai/route'
+import { Route as ConnectionsRouteImport } from './routes/connections'
+import { Route as DeviceRouteImport } from './routes/device'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SleepyDeviceRouteImport } from './routes/sleepy-device'
 import { Route as AiIndexRouteImport } from './routes/ai/index'
 import { Route as AiLiveRouteImport } from './routes/ai/live'
 
-const SleepyDeviceRoute = SleepyDeviceRouteImport.update({
-  id: '/sleepy-device',
-  path: '/sleepy-device',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DeviceRoute = DeviceRouteImport.update({
-  id: '/device',
-  path: '/device',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConnectionsRoute = ConnectionsRouteImport.update({
-  id: '/connections',
-  path: '/connections',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AiRouteRoute = AiRouteRouteImport.update({
@@ -43,9 +28,24 @@ const AiRouteRoute = AiRouteRouteImport.update({
   path: '/ai',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ConnectionsRoute = ConnectionsRouteImport.update({
+  id: '/connections',
+  path: '/connections',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeviceRoute = DeviceRouteImport.update({
+  id: '/device',
+  path: '/device',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SleepyDeviceRoute = SleepyDeviceRouteImport.update({
+  id: '/sleepy-device',
+  path: '/sleepy-device',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AiIndexRoute = AiIndexRouteImport.update({
@@ -132,32 +132,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sleepy-device': {
-      id: '/sleepy-device'
-      path: '/sleepy-device'
-      fullPath: '/sleepy-device'
-      preLoaderRoute: typeof SleepyDeviceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/device': {
-      id: '/device'
-      path: '/device'
-      fullPath: '/device'
-      preLoaderRoute: typeof DeviceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/connections': {
-      id: '/connections'
-      path: '/connections'
-      fullPath: '/connections'
-      preLoaderRoute: typeof ConnectionsRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ai': {
@@ -167,11 +146,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/connections': {
+      id: '/connections'
+      path: '/connections'
+      fullPath: '/connections'
+      preLoaderRoute: typeof ConnectionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/device': {
+      id: '/device'
+      path: '/device'
+      fullPath: '/device'
+      preLoaderRoute: typeof DeviceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sleepy-device': {
+      id: '/sleepy-device'
+      path: '/sleepy-device'
+      fullPath: '/sleepy-device'
+      preLoaderRoute: typeof SleepyDeviceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ai/': {

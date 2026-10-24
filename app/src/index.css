@@ -159,7 +159,7 @@
   .tabs {
     @apply gap-[1rem];
   }
-  .tabs__list {
+  .tabs__list-container {
     @apply border border-border;
     background: color-mix(in srgb, var(--surface), transparent 80%);
     box-shadow: color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px
