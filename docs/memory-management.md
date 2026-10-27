@@ -36,6 +36,6 @@ All allocations round up to 4-byte alignment (`align()`), which the implementati
 
 ## Sizing `ESP_COMMANDER_JSON_BUFFER_SIZE`
 
-The default is 8192 bytes per buffer. Two buffers (request + response) means **16 KB** of static RAM reserved for a `Device` by default — halve `ESP_COMMANDER_JSON_BUFFER_SIZE` if your schema/payloads are small and RAM is tight, or raise it if you have many queries/actions with long names or large enum definitions (schema responses in particular can be large, since they describe every registered query and action at once). See [Config Reference](./11.config.md).
+The default is 8192 bytes per buffer. Two buffers (request + response) means **16 KB** of static RAM reserved for a `Device` by default — halve `ESP_COMMANDER_JSON_BUFFER_SIZE` if your schema/payloads are small and RAM is tight, or raise it if you have many queries/actions with long names or large enum definitions (schema responses in particular can be large, since they describe every registered query and action at once). See [Config Reference](./config.md).
 
-Next: [Config Reference](./11.config.md).
+Next: [Config Reference](./config.md).

@@ -52,12 +52,6 @@ An app to controll IOT devices using MQTT
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/esp-now-mqtt-gateway.svg">
 </p>
 
-## Docs
-
-<p float="left">
-  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/docusaurus.svg">
-</p>
-
 ## Diagrams
 
 <p float="left">
@@ -66,7 +60,7 @@ An app to controll IOT devices using MQTT
 
 # Docs
 
-The docs are available [Here](https://esp-commander-docs.netlify.app)
+The docs are available [Here](https://github.com/devlotfi/esp-commander/blob/main/docs/intro.md)
 
 # Examples
 

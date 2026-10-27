@@ -93,6 +93,6 @@ Any string literal works here — you aren't limited to the built-in `LibraryErr
 
 ## `Value` array sizing vs. `Config.h` maximums
 
-`parameters`/`results` spans on `Query`/`Action` can be any length **you** choose when constructing them — but the `HandlerValue` arrays `Device::request()` allocates on the stack to shuttle data to/from your handler are fixed at `ESP_COMMANDER_MAX_PARAMETERS`/`ESP_COMMANDER_MAX_RESULTS` (default 8 each). If any single query/action declares more than that many results/parameters, the extra ones will read/write past the handler's usable range. Raise the relevant `Config.h` define if you need more than 8 of either — see [Config Reference](./11.config.md).
+`parameters`/`results` spans on `Query`/`Action` can be any length **you** choose when constructing them — but the `HandlerValue` arrays `Device::request()` allocates on the stack to shuttle data to/from your handler are fixed at `ESP_COMMANDER_MAX_PARAMETERS`/`ESP_COMMANDER_MAX_RESULTS` (default 8 each). If any single query/action declares more than that many results/parameters, the extra ones will read/write past the handler's usable range. Raise the relevant `Config.h` define if you need more than 8 of either — see [Config Reference](./config.md).
 
-Next: [Device](./8.device.md).
+Next: [Device](./device.md).

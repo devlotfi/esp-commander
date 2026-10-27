@@ -144,4 +144,4 @@ void loop() {
 }
 ```
 
-Next: [Architecture](./5.architecture.md).
+Next: [Architecture](./architecture.md).

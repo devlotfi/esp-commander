@@ -24,7 +24,7 @@ All three are plain function pointers (not `std::function`), so they carry no ca
 enum ValueTypeEnum { INT, RANGE, FLOAT, DOUBLE, BOOL, STRING, ENUM, COLOR };
 ```
 
-`ValueType` wraps this enum in a small class with an implicit conversion back to the raw enum, a deleted `bool` conversion (so `if (value)` can't accidentally compile against the wrong thing), and `to_string()` returning the matching uppercase name. See [Values & Types](./6.values-and-types.md) for what each type validates.
+`ValueType` wraps this enum in a small class with an implicit conversion back to the raw enum, a deleted `bool` conversion (so `if (value)` can't accidentally compile against the wrong thing), and `to_string()` returning the matching uppercase name. See [Values & Types](./values-and-types.md) for what each type validates.
 
 ## `RequestType`
 
@@ -48,7 +48,7 @@ public:
 };
 ```
 
-The complete set of error codes the library itself can produce in a response's `"code"` field. Your own handlers can set `error` to any string you like — these constants are just what `Device`/`SleepyDevice` use internally. See [Device → outcome table](./8.device.md#full-outcome-table) for exactly when each fires, including the known `INVALID_PARAMETERS`/`INVALID_RESULTS` inconsistency on the query path.
+The complete set of error codes the library itself can produce in a response's `"code"` field. Your own handlers can set `error` to any string you like — these constants are just what `Device`/`SleepyDevice` use internally. See [Device → outcome table](./device.md#full-outcome-table) for exactly when each fires, including the known `INVALID_PARAMETERS`/`INVALID_RESULTS` inconsistency on the query path.
 
 ## `ResponseStatus`
 
@@ -62,4 +62,4 @@ public:
 
 The two possible values of a response's `"status"` field.
 
-Next: [Troubleshooting](./13.troubleshooting.md).
+Next: [Troubleshooting](./troubleshooting.md).

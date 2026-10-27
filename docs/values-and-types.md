@@ -51,7 +51,7 @@ Value mode({
 ## `required` vs. optional fields
 
 - If a field is **missing** from the incoming JSON and `required` is `false`, `validateParameter` succeeds without producing a value (the corresponding `HandlerValue` stays empty — check `.has_value()` in your handler before reading it).
-- If a field is **missing** and `required` is `true`, validation fails and the request is rejected with `INVALID_PARAMETERS` (or, for a query/action *result* a handler forgot to fill in, `INVALID_RESULTS`/`INVALID_PARAMETERS` — see [Device](./8.device.md#error-code-inconsistency-between-queries-and-actions) for a current inconsistency in which code is used where).
+- If a field is **missing** and `required` is `true`, validation fails and the request is rejected with `INVALID_PARAMETERS` (or, for a query/action *result* a handler forgot to fill in, `INVALID_RESULTS`/`INVALID_PARAMETERS` — see [Device](./device.md#error-code-inconsistency-between-queries-and-actions) for a current inconsistency in which code is used where).
 - If a field is **present** but the JSON type doesn't match the declared `ValueType`, validation fails regardless of `required`.
 
 ## Validating incoming parameters
@@ -102,4 +102,4 @@ or, for an `ENUM`:
 
 `min`/`max` only appear for `RANGE`, and `enumDefinition` only appears for `ENUM` — every other type serializes just `name`, `type`, and `required`.
 
-Next: [Queries & Actions](./7.queries-and-actions.md).
+Next: [Queries & Actions](./queries-and-actions.md).
