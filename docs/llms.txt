@@ -1,0 +1,19 @@
+# EspCommander
+
+> EspCommander is a framework-agnostic RPC library for ESP32 devices. It defines typed queries and actions over JSON, without tying devices to a specific transport.
+
+## Documentation
+
+- [Introduction](https://devlotfi.github.io/esp-commander/intro.md): Overview of EspCommander, its device models, building blocks, and requirements.
+- [Installation](https://devlotfi.github.io/esp-commander/installation.md): Header installation, dependencies, and compile-time configuration.
+- [Quick Start](https://devlotfi.github.io/esp-commander/quick-start.md): Create a device with a query and action, then handle JSON requests.
+- [Architecture](https://devlotfi.github.io/esp-commander/architecture.md): Transport-agnostic design, request lifecycle, validation, and memory model.
+- [Config Reference](https://devlotfi.github.io/esp-commander/config.md): Debug logging and configurable limits from `Config.h`.
+- [Device](https://devlotfi.github.io/esp-commander/device.md): Request/response protocol, discovery, schema, request formats, and outcomes.
+- [Examples](https://devlotfi.github.io/esp-commander/examples.md): Always-on and sleepy-device examples.
+- [Memory Management](https://devlotfi.github.io/esp-commander/memory-management.md): Fixed-buffer allocator behavior, reset semantics, and sizing guidance.
+- [Queries & Actions](https://devlotfi.github.io/esp-commander/queries-and-actions.md): Define handlers and operations for always-on devices.
+- [Sleepy Devices](https://devlotfi.github.io/esp-commander/sleepy-devices.md): Push-and-poll protocol and its store-and-forward gateway requirement.
+- [Troubleshooting](https://devlotfi.github.io/esp-commander/troubleshooting.md): Common protocol, validation, logging, and buffer issues.
+- [Types Reference](https://devlotfi.github.io/esp-commander/types.md): Handler types, value types, status strings, and library errors.
+- [Values & Types](https://devlotfi.github.io/esp-commander/values-and-types.md): Field declarations, supported types, validation, and schema shape.
