@@ -62,6 +62,8 @@ An app to controll IOT devices using MQTT
 
 The docs are available [Here](https://github.com/devlotfi/esp-commander/blob/main/docs/intro.md)
 
+llms.txt are available [Here](https://github.com/devlotfi/esp-commander/blob/main/docs/llms.txt)
+
 # Examples
 
 A few practical examples
