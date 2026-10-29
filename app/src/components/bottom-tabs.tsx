@@ -35,7 +35,7 @@ function BottomTabsButton({
       <div className="flex flex-col items-center p-[0.3rem] gap-[0.2rem]">
         <div
           className={cn(
-            "flex justify-center items-center size-[2rem] rounded-[0.5rem] rounded-b-none",
+            "flex justify-center items-center size-[2rem] rounded-[0.5rem]",
             isActive && "bg-accent beveled",
           )}
         >
