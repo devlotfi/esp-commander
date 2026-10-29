@@ -29,13 +29,9 @@ export default function SectionHeader({
     >
       <div
         className={cn(
-          "flex justify-center items-center rounded-2xl size-[3rem] bg-accent",
+          "flex justify-center items-center rounded-2xl size-[3rem] bg-accent beveled",
           classNameIconWrapper,
         )}
-        style={{
-          boxShadow:
-            "color-mix(in srgb, var(--accent), transparent 30%) 0 0 3rem 0",
-        }}
         {...iconWrapperProps}
       >
         <DynamicIcon

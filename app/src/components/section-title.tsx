@@ -24,13 +24,9 @@ export default function SectionTitle({
     >
       <div
         className={cn(
-          "flex justify-center items-center rounded-2xl size-[2.5rem] bg-[color-mix(in_srgb,var(--surface),transparent_85%)] border",
+          "flex justify-center items-center rounded-2xl size-[2.5rem] glassy",
           classNameIconWrapper,
         )}
-        style={{
-          boxShadow:
-            "color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px inset",
-        }}
         {...iconWrapperProps}
       >
         <DynamicIcon

@@ -35,7 +35,7 @@ export default function DataRow({
           )}
         ></div>
       </div>
-      <div className="flex text-[12pt] break-all">{value}</div>
+      <div className="flex text-[11pt] break-all ml-[0.5rem]">{value}</div>
     </div>
   );
 }

@@ -95,16 +95,16 @@ export function ThemeProvider({ children }: PropsWithChildren) {
     switch (appliedTheme) {
       case ThemeOptions.LIGHT:
         if (isLarge) {
-          metaTag.setAttribute("content", "#cccccc");
+          metaTag.setAttribute("content", "#d4d8de");
         } else {
-          metaTag.setAttribute("content", "#d4d4d4");
+          metaTag.setAttribute("content", "#eaecef");
         }
         break;
       case ThemeOptions.DARK:
         if (isLarge) {
-          metaTag.setAttribute("content", "#23282b");
+          metaTag.setAttribute("content", "#202733");
         } else {
-          metaTag.setAttribute("content", "#282B32");
+          metaTag.setAttribute("content", "#262d3b");
         }
         break;
     }

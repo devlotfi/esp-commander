@@ -30,10 +30,6 @@ export default function RequiredGeminiProvider({
           <Card.Footer className="justify-center py-[0.5rem]">
             <Button
               variant="primary"
-              style={{
-                boxShadow:
-                  "color-mix(in srgb, var(--accent), transparent 50%) 0 0 2rem 0",
-              }}
               onPress={() => navigate({ to: "/settings" })}
             >
               <Settings></Settings>

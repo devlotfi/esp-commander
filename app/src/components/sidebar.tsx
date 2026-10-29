@@ -33,12 +33,12 @@ function SidebarButton({
       <Button
         variant="outline"
         className={cn(
-          "justify-between h-auto p-[0.4rem] border border-transparent",
+          "justify-between h-auto p-[0.4rem] glassy rounded-3xl",
           "transition-all duration-300",
           sidebarOpen ? "lg:w-full" : "gap-0 w-auto",
           isActive &&
             "bg-[color-mix(in_srgb,var(--surface),transparent_80%)] border-border",
-          !isActive && "shadow-none",
+          !isActive && "shadow-none border-none bg-transparent",
           className,
         )}
         onPress={() => {
@@ -51,7 +51,7 @@ function SidebarButton({
             className={cn(
               "flex justify-center items-center min-h-[2.2rem] min-w-[2.2rem] rounded-2xl",
               "transition-colors duration-300",
-              isActive && "bg-accent",
+              isActive && "bg-accent beveled",
             )}
           >
             <DynamicIcon
@@ -171,13 +171,9 @@ export default function Sidebar() {
     <div className="hidden md:flex p-[1rem]">
       <div
         className={cn(
-          "flex relative flex-col min-w-[5rem] duration-500 transition-[width] bg-[color-mix(in_srgb,var(--surface),transparent_85%)] border rounded-3xl",
+          "flex relative flex-col min-w-[5rem] duration-500 transition-[width] glassy rounded-3xl",
           sidebarOpen ? "lg:w-[16rem]" : "w-[5rem]",
         )}
-        style={{
-          boxShadow:
-            "color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px inset",
-        }}
       >
         <div className="flex h-[4rem] justify-center items-center w-full absolute top-0">
           <div

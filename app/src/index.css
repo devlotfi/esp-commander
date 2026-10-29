@@ -1,11 +1,18 @@
 @import "tailwindcss";
 @import "@heroui/styles";
 
+/* ------------------------------------------------------------------ */
+/* Fonts                                                               */
+/* Your original file pointed the "normal" face at Rubik-Italic.ttf.   */
+/* Use the variable upright + italic files (Google Fonts names shown). */
+/* ------------------------------------------------------------------ */
+
 @font-face {
   font-family: "Rubik";
   font-style: normal;
-  font-display: block;
-  src: url("./assets/Rubik-Italic.ttf");
+  font-weight: 300 900;
+  font-display: swap;
+  src: url("./assets/Rubik-Italic.ttf") format("truetype");
 }
 
 * {
@@ -14,212 +21,9 @@
   font-style: normal;
 }
 
-@layer components {
-  .button--outline {
-    box-shadow: color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px
-      inset;
-  }
-
-  .modal__backdrop {
-    @apply bg-modal;
-  }
-  .modal__dialog {
-    @apply border border-border;
-    background: linear-gradient(
-      to top,
-      color-mix(
-        in srgb,
-        color-mix(in srgb, var(--accent), var(--background) 90%),
-        transparent 30%
-      ),
-      color-mix(
-        in srgb,
-        color-mix(in srgb, var(--surface), var(--background) 95%),
-        transparent 30%
-      )
-    );
-    box-shadow: color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px
-      inset;
-  }
-
-  .input-group {
-    @apply border border-border;
-    background: color-mix(in srgb, var(--surface), transparent 80%) !important;
-    box-shadow: color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px
-      inset;
-  }
-
-  .select__popover {
-    @apply border border-border shadow-md;
-    background: linear-gradient(
-      to top,
-      color-mix(in srgb, transparent, var(--background) 95%),
-      color-mix(in srgb, transparent, var(--background) 90%)
-    );
-    box-shadow: color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px
-      inset;
-  }
-
-  .popover {
-    @apply border border-border shadow-md;
-    background: linear-gradient(
-      to top,
-      color-mix(in srgb, transparent, var(--background) 95%),
-      color-mix(in srgb, transparent, var(--background) 90%)
-    );
-    box-shadow: color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px
-      inset;
-  }
-
-  .toast {
-    @apply bg-overlay;
-  }
-  .toast--danger {
-    @apply border border-danger shadow-md;
-    background: linear-gradient(
-      to top,
-      color-mix(in srgb, var(--danger), var(--surface) 85%),
-      color-mix(in srgb, var(--surface), var(--background) 70%)
-    );
-    box-shadow: color-mix(in srgb, var(--danger), transparent 50%) 0px -5px 0px
-      inset;
-  }
-  .toast--success {
-    @apply border border-success shadow-md;
-    background: linear-gradient(
-      to top,
-      color-mix(in srgb, var(--success), var(--surface) 85%),
-      color-mix(in srgb, var(--surface), var(--background) 70%)
-    );
-    box-shadow: color-mix(in srgb, var(--success), transparent 80%) 0px -5px 0px
-      inset;
-  }
-
-  .select__trigger {
-    @apply shadow-none border border-border;
-    background: color-mix(in srgb, var(--surface), transparent 80%) !important;
-    box-shadow: color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px
-      inset;
-  }
-
-  .slider__track {
-    background: color-mix(in srgb, var(--surface), transparent 80%) !important;
-  }
-
-  .color-input-group {
-    @apply shadow-none border border-border !py-[1.2rem];
-    background: color-mix(in srgb, var(--surface), transparent 80%) !important;
-    box-shadow: color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px
-      inset;
-  }
-
-  .color-picker__popover {
-    @apply border border-border shadow-md;
-    background: linear-gradient(
-      to top,
-      color-mix(in srgb, var(--accent), var(--background) 95%),
-      color-mix(in srgb, var(--surface), var(--background) 80%)
-    );
-    box-shadow: color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px
-      inset;
-  }
-
-  .card {
-    @apply border border-border;
-    background: color-mix(in srgb, var(--surface), transparent 80%) !important;
-    box-shadow: color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px
-      inset;
-  }
-
-  /*
-     .card {
-    @apply border border-border;
-    background:
-      linear-gradient(
-        120deg,
-        color-mix(in srgb, var(--surface), transparent 80%),
-        transparent 55%
-      ),
-      color-mix(in srgb, var(--surface), transparent 85%);
-    box-shadow: color-mix(in srgb, var(--surface), transparent 80%) 0px 0px 0px
-      2px inset;
-  }
-  */
-
-  .surface {
-    @apply rounded-2xl;
-  }
-  .surface--default {
-    @apply border border-border;
-    background: color-mix(in srgb, var(--surface), transparent 80%) !important;
-    box-shadow: color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px
-      inset;
-  }
-
-  .tabs {
-    @apply gap-[1rem];
-  }
-  .tabs__list-container {
-    @apply border border-border;
-    background: color-mix(in srgb, var(--surface), transparent 80%);
-    box-shadow: color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px
-      inset;
-  }
-  .tabs__tab {
-    @apply p-[1.2rem] whitespace-nowrap;
-  }
-  .tabs__indicator {
-    @apply text-foreground rounded-2xl;
-    background: color-mix(in srgb, var(--accent), transparent 80%) !important;
-    box-shadow: color-mix(in srgb, var(--accent), transparent 80%) 0px -3px 0px
-      inset;
-  }
-  .tabs__panel {
-    @apply px-0 !py-[0rem];
-  }
-  .tabs__tab[aria-selected="true"] {
-    @apply text-foreground;
-  }
-
-  .skeleton {
-    background: color-mix(in srgb, var(--surface), transparent 80%) !important;
-  }
-
-  .alert {
-    @apply border border-border;
-    background: color-mix(in srgb, var(--surface), transparent 80%);
-    box-shadow: color-mix(in srgb, var(--surface), transparent 80%) 0px -3px 0px
-      inset;
-  }
-
-  .avatar {
-    @apply border border-border;
-    background: color-mix(in srgb, var(--surface), transparent 80%) !important;
-  }
-  .avatar__fallback {
-    background: transparent;
-  }
-
-  .table-root {
-    background: transparent;
-  }
-  .table__header {
-    @apply text-foreground;
-    background: transparent;
-  }
-  .table__cell {
-    background: color-mix(in srgb, var(--surface), transparent 60%);
-  }
-
-  .chip--default {
-    @apply border border-border text-foreground max-w-[15rem];
-    background: color-mix(in srgb, var(--surface), transparent 70%) !important;
-  }
-  .chip__label {
-    @apply whitespace-break-spaces;
-  }
-}
-
+/* ------------------------------------------------------------------ */
+/* Theme tokens                                                        */
+/* ------------------------------------------------------------------ */
 @layer base {
   :root {
     color-scheme: light;
@@ -227,11 +31,11 @@
     --spacing: 0.25rem;
     --radius: 0.3rem;
 
-    --background: #cccccc;
-    --foreground: #536077;
+    --background: #d4d8de;
+    --foreground: #3f4b60;
 
     --surface: #ffffff;
-    --surface-foreground: #536077;
+    --surface-foreground: #3f4b60;
 
     --success: #1dbe63;
     --success-foreground: var(--snow);
@@ -252,6 +56,29 @@
     --surface-shadow: 0 0 0 0 transparent inset;
     --overlay-shadow: 0 0 0 0 transparent inset;
     --field-shadow: 0 0 0 0 transparent inset;
+
+    /* Glass */
+    --glass-blur: blur(14px) saturate(150%);
+    --glass-blur-overlay: blur(28px) saturate(160%);
+    --glass-fill: color-mix(in srgb, var(--surface) 50%, transparent);
+    --glass-fill-strong: color-mix(in srgb, var(--surface) 70%, transparent);
+    --glass-overlay-bg:
+      linear-gradient(
+        to top,
+        color-mix(in srgb, var(--accent) 9%, transparent),
+        transparent 75%
+      ),
+      color-mix(in srgb, var(--surface) 80%, transparent);
+    --glass-border: color-mix(in srgb, #fff 70%, transparent);
+
+    --glass-bevel-top: inset 0 1px 0 color-mix(in srgb, #fff 80%, transparent);
+    --glass-bevel-bottom: inset 0 -3px 0
+      color-mix(in srgb, var(--foreground) 12%, transparent);
+    --glass-bevel: var(--glass-bevel-top), var(--glass-bevel-bottom);
+
+    --glass-opaque:
+      inset 0 2px 0 color-mix(in srgb, #fff 25%, transparent),
+      inset 0 -3px 0 color-mix(in srgb, #000 25%, transparent);
   }
 
   .dark,
@@ -261,10 +88,10 @@
     --spacing: 0.25rem;
     --radius: 0.3rem;
 
-    --background: #23282b;
+    --background: #202733;
     --foreground: #b7bdc9;
 
-    --surface: #434c55;
+    --surface: #3a465c;
     --surface-foreground: var(--foreground);
 
     --success: #1dbe63;
@@ -292,9 +119,218 @@
     --surface-shadow: 0 0 0 0 transparent inset;
     --overlay-shadow: 0 0 0 0 transparent inset;
     --field-shadow: 0 0 0 0 transparent inset;
+
+    --glass-fill: color-mix(in srgb, var(--surface) 20%, transparent);
+    --glass-fill-strong: color-mix(in srgb, var(--surface) 40%, transparent);
+    --glass-overlay-bg:
+      linear-gradient(
+        to top,
+        color-mix(in srgb, var(--accent) 9%, transparent),
+        transparent 75%
+      ),
+      color-mix(in srgb, var(--background) 72%, transparent);
+    --glass-border: var(--border);
+
+    --glass-bevel-top: inset 0 1px 0 color-mix(in srgb, #fff 8%, transparent);
+    --glass-bevel-bottom: inset 0 -3px 0
+      color-mix(in srgb, var(--surface) 20%, transparent);
+    --glass-bevel: var(--glass-bevel-top), var(--glass-bevel-bottom);
+
+    --glass-opaque:
+      inset 0 2px 0 color-mix(in srgb, #fff 25%, transparent),
+      inset 0 -3px 0 color-mix(in srgb, #000 25%, transparent);
   }
 }
 
+/* ------------------------------------------------------------------ */
+/* Components                                                          */
+/* ------------------------------------------------------------------ */
+@layer components {
+  .card,
+  .surface--default,
+  .input-group,
+  .select__trigger,
+  .color-input-group,
+  .alert,
+  .tabs__list-container,
+  .input,
+  .textarea {
+    border: 1px solid var(--glass-border);
+    background: var(--glass-fill) !important;
+    box-shadow: none;
+  }
+
+  /* Cards, tab bar, inputs and selects share the glass edge. */
+  .card,
+  .surface--default,
+  .tabs__list-container,
+  .input,
+  .textarea,
+  .input-group,
+  .select__trigger,
+  .color-input-group {
+    box-shadow: var(--glass-bevel);
+  }
+
+  /* Floating surfaces: more opaque, heavier blur, accent glow. */
+  .modal__dialog,
+  .popover,
+  .select__popover,
+  .color-picker__popover {
+    border: 1px solid var(--glass-border);
+    background: var(--glass-overlay-bg);
+    box-shadow:
+      var(--glass-bevel),
+      0 12px 32px -8px color-mix(in srgb, black, transparent 75%);
+    -webkit-backdrop-filter: var(--glass-blur-overlay);
+    backdrop-filter: var(--glass-blur-overlay);
+  }
+
+  .surface {
+    @apply rounded-2xl;
+  }
+
+  .color-input-group {
+    @apply !py-[1.2rem];
+  }
+
+  /* Buttons: glass edge on every variant except ghost. */
+  .button:not(.button--ghost, .button--primary) {
+    box-shadow: var(--glass-bevel);
+  }
+  /* Outline buttons get the full glass treatment (fill, border, blur). */
+  .button--outline {
+    border: 1px solid var(--glass-border);
+  }
+  .button--primary {
+    box-shadow: var(--glass-opaque);
+  }
+
+  /* Modal */
+  .modal__backdrop {
+    @apply bg-modal;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+
+  /* Toasts */
+  .toast {
+    @apply bg-overlay;
+  }
+  .toast--danger,
+  .toast--success {
+    @apply border shadow-md;
+  }
+  .toast--danger {
+    @apply border-danger;
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--danger), var(--surface) 85%),
+      color-mix(in srgb, var(--surface), var(--background) 70%)
+    );
+    box-shadow: inset 0 -5px 0
+      color-mix(in srgb, var(--danger), transparent 50%);
+  }
+  .toast--success {
+    @apply border-success;
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--success), var(--surface) 85%),
+      color-mix(in srgb, var(--surface), var(--background) 70%)
+    );
+    box-shadow: inset 0 -5px 0
+      color-mix(in srgb, var(--success), transparent 70%);
+  }
+
+  /* Slider */
+  .slider__track {
+    background: var(--glass-fill) !important;
+  }
+
+  /* Tabs */
+  .tabs {
+    @apply gap-[1rem];
+  }
+  .tabs__tab {
+    @apply p-[1.2rem] whitespace-nowrap;
+  }
+  .tabs__tab[aria-selected="true"] {
+    @apply text-foreground;
+  }
+  .tabs__indicator {
+    @apply text-foreground rounded-2xl;
+    background: color-mix(in srgb, var(--accent), transparent 80%) !important;
+    border: 1px solid color-mix(in srgb, var(--accent), transparent 65%);
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, #fff 25%, transparent),
+      inset 0 -3px 0 color-mix(in srgb, var(--accent), transparent 80%);
+  }
+  .tabs__panel {
+    @apply px-0 !py-[0rem];
+  }
+
+  /* No backdrop blur on the small or repeated elements: it gets expensive. */
+  .skeleton {
+    background: var(--glass-fill) !important;
+  }
+
+  .avatar {
+    border: 1px solid var(--glass-border);
+    background: var(--glass-fill) !important;
+  }
+  .avatar__fallback {
+    background: transparent;
+  }
+
+  .table-root {
+    background: transparent;
+  }
+  .table__header {
+    @apply text-foreground;
+    background: transparent;
+  }
+  .table__cell {
+    background: var(--glass-fill-strong);
+  }
+
+  .chip--default {
+    @apply text-foreground max-w-[15rem] glassy;
+  }
+  .chip--primary {
+    @apply text-accent-foreground max-w-[15rem];
+    box-shadow: var(--glass-opaque);
+  }
+  .chip__label {
+    @apply whitespace-break-spaces;
+  }
+}
+
+@utility glassy {
+  @apply rounded-2xl;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-fill);
+  box-shadow: var(--glass-bevel);
+}
+
+@utility glassy-navbar {
+  border-bottom: 1px solid var(--glass-border);
+  background: var(--glass-fill);
+  box-shadow: var(--glass-bevel-bottom);
+}
+
+@utility glassy-bottom {
+  border-top: 1px solid var(--glass-border);
+  background: var(--glass-fill);
+  box-shadow: var(--glass-bevel-top);
+}
+
+@utility beveled {
+  box-shadow: var(--glass-opaque);
+}
+
+/* ------------------------------------------------------------------ */
+/* Motion                                                              */
+/* ------------------------------------------------------------------ */
 @keyframes loading-slide {
   0% {
     transform: translateX(-100%);
@@ -309,6 +345,36 @@
 
 .animate-loading {
   animation: loading-slide 1.2s infinite ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-loading {
+    animation: none;
+    transform: translateX(0);
+    opacity: 0.6;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Backgrounds                                                         */
+/* Glass only reads as glass when there is something behind it to      */
+/* blur, so the page gets two soft glows plus the dot grid.            */
+/* ------------------------------------------------------------------ */
+@utility bg-main {
+  background-image:
+    linear-gradient(
+      to top,
+      color-mix(in srgb, var(--accent), transparent 88%),
+      transparent 60%
+    ),
+    radial-gradient(
+      color-mix(in srgb, var(--surface), transparent 75%) 2px,
+      transparent 2px
+    );
+  background-size:
+    100% 100%,
+    2rem 2rem;
+  background-attachment: fixed;
 }
 
 @utility bg-modal {
@@ -326,26 +392,8 @@
       color-mix(in srgb, var(--surface), transparent 90%) 2px,
       transparent 2px
     );
-
   background-size:
     100% 100%,
-    100% 100%,
-    2rem 2rem;
-}
-
-@utility bg-main {
-  background-image:
-    linear-gradient(
-      to top,
-      color-mix(in srgb, var(--accent), transparent 90%),
-      transparent
-    ),
-    radial-gradient(
-      color-mix(in srgb, var(--surface), transparent 75%) 2px,
-      transparent 2px
-    );
-
-  background-size:
     100% 100%,
     2rem 2rem;
 }

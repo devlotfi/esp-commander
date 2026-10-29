@@ -69,41 +69,6 @@ export default function ConnectionComponent({ connection }: ConnectionProps) {
               {connection.name}
             </div>
             <DataRow name="URL" value={connection.url}></DataRow>
-
-            {connection.username ? (
-              <>
-                <div className="flex font-bold text-[12pt]">
-                  {t("authenthication")}
-                </div>
-                <DataRow
-                  name={t("username")}
-                  value={connection.username}
-                ></DataRow>
-              </>
-            ) : null}
-
-            <div className="flex font-bold text-[12pt]">{t("discovery")}</div>
-            <DataRow
-              name={t("discoveryTopic")}
-              value={connection.discoveryTopic}
-            ></DataRow>
-            <DataRow
-              name={t("responseDiscoveryTopic")}
-              value={connection.responseDiscoveryTopic}
-            ></DataRow>
-            {connection.sleepyDeviceDiscoveryTopic &&
-            connection.sleepyDeviceResponseDiscoveryTopic ? (
-              <>
-                <DataRow
-                  name={t("sleepyDeviceDiscoveryTopic")}
-                  value={connection.sleepyDeviceDiscoveryTopic}
-                ></DataRow>
-                <DataRow
-                  name={t("sleepyDeviceResponseDiscoveryTopic")}
-                  value={connection.sleepyDeviceResponseDiscoveryTopic}
-                ></DataRow>
-              </>
-            ) : null}
           </div>
 
           <div className="flex gap-[0.3rem]">

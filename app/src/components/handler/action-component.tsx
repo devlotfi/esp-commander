@@ -96,10 +96,6 @@ export default function ActionComponent({ action }: ActionComponentProps) {
               isIconOnly
               variant="primary"
               isPending={isPending}
-              style={{
-                boxShadow:
-                  "color-mix(in srgb, var(--accent), transparent 30%) 0 0 3rem 0",
-              }}
               onPress={() => {
                 if (action.parameters && action.parameters.length) {
                   state.open();
