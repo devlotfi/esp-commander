@@ -80,7 +80,7 @@ export default function DisplaySettings() {
                 textValue={t("system")}
               >
                 <div className="flex gap-[1rem] items-center">
-                  <div className="flex justify-center items-center h-[2rem] w-[2rem] bg-accent rounded-2xl">
+                  <div className="flex justify-center items-center h-[2rem] w-[2rem] bg-accent beveled rounded-2xl">
                     <Computer className="text-accent-foreground"></Computer>
                   </div>
                   <div className="flex">{t("system")}</div>
@@ -93,7 +93,7 @@ export default function DisplaySettings() {
                 textValue={t("light")}
               >
                 <div className="flex gap-[1rem] items-center">
-                  <div className="flex justify-center items-center h-[2rem] w-[2rem] bg-accent rounded-2xl">
+                  <div className="flex justify-center items-center h-[2rem] w-[2rem] bg-accent beveled rounded-2xl">
                     <Sun className="text-accent-foreground"></Sun>
                   </div>
                   <div className="flex">{t("light")}</div>
@@ -106,7 +106,7 @@ export default function DisplaySettings() {
                 textValue={t("dark")}
               >
                 <div className="flex gap-[1rem] items-center">
-                  <div className="flex justify-center items-center h-[2rem] w-[2rem] bg-accent rounded-2xl">
+                  <div className="flex justify-center items-center h-[2rem] w-[2rem] bg-accent beveled rounded-2xl">
                     <Moon className="text-accent-foreground"></Moon>
                   </div>
                   <div className="flex">{t("dark")}</div>

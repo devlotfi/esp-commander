@@ -186,6 +186,10 @@
     backdrop-filter: var(--glass-blur-overlay);
   }
 
+  .modal__close-trigger {
+    @apply glassy;
+  }
+
   .surface {
     @apply rounded-2xl;
   }
@@ -302,6 +306,26 @@
   }
   .chip__label {
     @apply whitespace-break-spaces;
+  }
+
+  /* Switch */
+  .switch__control {
+    border: 1px solid var(--glass-border);
+    background: var(--glass-fill) !important;
+    box-shadow: var(--glass-bevel);
+  }
+  .switch[data-selected="true"] .switch__control,
+  .switch__control[data-selected="true"] {
+    background: color-mix(in srgb, var(--accent), transparent 80%) !important;
+    border-color: color-mix(in srgb, var(--accent), transparent 65%);
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, #fff 25%, transparent),
+      inset 0 -3px 0 color-mix(in srgb, var(--accent), transparent 80%);
+  }
+  .switch__thumb {
+    box-shadow:
+      inset 0 -2px 0 color-mix(in srgb, #000 15%, transparent),
+      0 1px 3px color-mix(in srgb, #000 30%, transparent);
   }
 }
 

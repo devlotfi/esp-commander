@@ -1,6 +1,6 @@
-import type { AppTranslation } from "../types/app-translation";
+import type { EN } from "./en";
 
-export const FR: AppTranslation = {
+export const FR: Partial<typeof EN> = {
   devices: "Appareils",
   connections: "Connexions",
   settings: "Paramètres",

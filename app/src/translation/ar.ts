@@ -1,6 +1,6 @@
-import type { AppTranslation } from "../types/app-translation";
+import type { EN } from "./en";
 
-export const AR: AppTranslation = {
+export const AR: Partial<typeof EN> = {
   devices: "الأجهزة",
   connections: "الاتصالات",
   settings: "الإعدادات",
